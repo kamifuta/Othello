@@ -10,83 +10,90 @@ namespace Titles
     public class TitleManager : MonoBehaviour
     {
         [SerializeField] private GameManager gameManager;
+        [SerializeField] private PlayerSettingManager playerSettingManager;
 
-        [SerializeField] private Button upButton;
-        [SerializeField] private Button downButton;
-        [SerializeField] private Text playerNumText;
 
-        [SerializeField] private Button playWithComputerButton;
-        [SerializeField] private Button playWithFriendsButton;
+        //[SerializeField] private Button playWithComputerButton;
+        //[SerializeField] private Button playWithFriendsButton;
+        [SerializeField] private Button playOfflineButton;
         [SerializeField] private Button playOnlineButton;
 
-        private ReactiveProperty<int> playerNum = new ReactiveProperty<int>(2);
+        [SerializeField] private Button startOfflineButton;
+
+        [SerializeField] private GameObject playerSettingPanel;
+        [SerializeField] private GameObject chooseGameModePanel;
+
+        //private ReactiveProperty<int> playerNum = new ReactiveProperty<int>(2);
 
         private void Start()
         {
-            PlayerNumChangeObservables();
+            //PlayerNumChangeObservables();
             StartButtonObservable();
         }
 
-        private void PlayerNumChangeObservables()
-        {
-            upButton.OnClickAsObservable()
-                .Subscribe(_ =>
-                {
-                    playerNum.Value++;
-                })
-                .AddTo(this);
+        //private void PlayerNumChangeObservables()
+        //{
+        //    upButton.OnClickAsObservable()
+        //        .Subscribe(_ =>
+        //        {
+        //            playerNum.Value++;
+        //        })
+        //        .AddTo(this);
 
-            downButton.OnClickAsObservable()
-                .Subscribe(_ =>
-                {
-                    playerNum.Value--;
-                })
-                .AddTo(this);
+        //    downButton.OnClickAsObservable()
+        //        .Subscribe(_ =>
+        //        {
+        //            playerNum.Value--;
+        //        })
+        //        .AddTo(this);
 
-            playerNum
-                .Subscribe(x =>
-                {
-                    playerNumText.text = x.ToString();
+        //    playerNum
+        //        .Subscribe(x =>
+        //        {
+        //            playerNumText.text = x.ToString();
 
-                    if (x == 2)
-                    {
-                        upButton.interactable = true;
-                        downButton.interactable = false;
-                    }
-                    else if (x == 4)
-                    {
-                        upButton.interactable = false;
-                        downButton.interactable = true;
-                    }
-                    else
-                    {
-                        upButton.interactable = true;
-                        downButton.interactable = true;
-                    }
-                })
-                .AddTo(this);
-        }
+        //            if (x == 2)
+        //            {
+        //                upButton.interactable = true;
+        //                downButton.interactable = false;
+        //            }
+        //            else if (x == 4)
+        //            {
+        //                upButton.interactable = false;
+        //                downButton.interactable = true;
+        //            }
+        //            else
+        //            {
+        //                upButton.interactable = true;
+        //                downButton.interactable = true;
+        //            }
+        //        })
+        //        .AddTo(this);
+        //}
 
         private void StartButtonObservable()
         {
-            playWithComputerButton.OnClickAsObservable()
+            playOfflineButton.OnClickAsObservable()
                 .Subscribe(_ =>
                 {
-                    gameManager.StartGame(playerNum.Value, GameMode.WithCPU);
+                    playerSettingPanel.SetActive(true);
+                    chooseGameModePanel.SetActive(false);
                 })
                 .AddTo(this);
 
-            playWithFriendsButton.OnClickAsObservable()
+            startOfflineButton.OnClickAsObservable()
                 .Subscribe(_ =>
                 {
-                    gameManager.StartGame(playerNum.Value, GameMode.WithFriends);
+                    //var allPlayerCount = playerSettingManager.PlayerNum + playerSettingManager.ComCount;
+                    gameManager.StartGameOffline(playerSettingManager.PlayerNum, playerSettingManager.ComCount);
                 })
                 .AddTo(this);
 
             playOnlineButton.OnClickAsObservable()
                 .Subscribe(_ =>
                 {
-                    gameManager.StartGame(playerNum.Value, GameMode.Online);
+                    //var allPlayerCount = playerSettingManager.PlayerNum + playerSettingManager.ComCount;
+                    gameManager.StartGameOnline(2);
                 })
                 .AddTo(this);
         }

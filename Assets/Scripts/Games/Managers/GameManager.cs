@@ -26,27 +26,45 @@ namespace Games.Managers
             DontDestroyOnLoad(this);
         }
 
-        public async void StartGame(int playerNum, GameMode gameMode)
+        public async void StartGameOffline(int playerNum, int COMNum)
         {
             await SceneManager.LoadSceneAsync("GameScene");
 
-            FindObjectOfType<CameraManager>().Init(playerNum);
+            FindObjectOfType<CameraManager>().Init(playerNum+COMNum);
             FindObjectOfType<TurnPresenter>().Init();
-            FindObjectOfType<DiscsPresenter>().Init(playerNum);
-            
-            var token = this.GetCancellationTokenOnDestroy();
+            FindObjectOfType<DiscsPresenter>().Init(playerNum+COMNum);
 
-            switch (gameMode)
-            {
-                case GameMode.WithCPU:
-                    FindObjectOfType<AIManager>().GenerateAI(playerNum, token);
-                    break;
-                case GameMode.WithFriends:
-                    break;
-                case GameMode.Online:
-                    break;
-            }
+            var token = this.GetCancellationTokenOnDestroy();
+            FindObjectOfType<AIManager>().GenerateAI(playerNum, COMNum, token);
         }
+
+        public void StartGameOnline(int allPlayerNum)
+        {
+
+        }
+
+
+        //public async void StartGame(int playerNum, GameMode gameMode)
+        //{
+        //    await SceneManager.LoadSceneAsync("GameScene");
+
+        //    FindObjectOfType<CameraManager>().Init(playerNum);
+        //    FindObjectOfType<TurnPresenter>().Init();
+        //    FindObjectOfType<DiscsPresenter>().Init(playerNum);
+            
+        //    var token = this.GetCancellationTokenOnDestroy();
+
+        //    switch (gameMode)
+        //    {
+        //        case GameMode.WithCPU:
+        //            FindObjectOfType<AIManager>().GenerateAI(playerNum, token);
+        //            break;
+        //        case GameMode.WithFriends:
+        //            break;
+        //        case GameMode.Online:
+        //            break;
+        //    }
+        //}
 
         //private void GenerateAI(int playerNum)
         //{

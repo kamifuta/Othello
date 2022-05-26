@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using UnityEngine;
+using System;
 
 namespace AI
 {
@@ -16,19 +17,14 @@ namespace AI
         private List<Players> _AIList = new List<Players>();
         public IReadOnlyList<Players> AIList => _AIList;
 
-        public void GenerateAI(int playerNum, CancellationToken token)
+        public void GenerateAI(int playerNum, int AINum, CancellationToken token)
         {
-            //var token = this.GetCancellationTokenOnDestroy();
-
-            new RandomPutAI(Players.Player2, token);
-            _AIList.Add(Players.Player2);
-            if (playerNum == 2) return;
-            new RandomPutAI(Players.Player3, token);
-            _AIList.Add(Players.Player3);
-            if (playerNum == 3) return;
-            new RandomPutAI(Players.Player4, token);
-            _AIList.Add(Players.Player4);
-            if (playerNum == 4) return;
+            for(int i = 0; i < AINum; i++)
+            {
+                var player = (Players)Enum.ToObject(typeof(Players), playerNum + i + 1);
+                new RandomPutAI(player, token);
+                _AIList.Add(player);
+            }
         }
 
         public bool CheckAITurn()
