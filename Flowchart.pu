@@ -1,0 +1,58 @@
+@startuml flowchart
+start
+:先攻と後攻を決定する
+（黒が先攻）;
+:中央に石を配置;
+while (勝敗が付いていない) is (yes)
+    :黒の石が置ける場所を探す;
+    if(黒の石が置ける場所がない) then(yes)
+        :パスする;
+    else (no)
+        :黒の石を置く;
+        :黒の石にはさまれている
+        白い石を裏返す;
+        if(すべてのマスが埋まっている) then(yes)
+            (A)
+            end
+        else (no)
+        endif
+        :すべての石の色を確認する;
+        if(すべての石の色が黒である) then(yes)
+            :先攻の勝ち;
+            end
+        else (no)
+        endif
+    endif
+
+    :白の石が置ける場所を探す;
+    if(白の石が置ける場所がない) then(yes)
+        :パスする;
+    else (no)
+        :白の石を置く;
+        :白の石に挟まれている
+        黒の石を裏返す;
+        if(すべてのマスが埋まっている) then(yes)
+            (A)
+            end
+        else (no)
+        endif
+        :すべての石の色を確認する;
+        if(すべての石の色が白である) then(yes)
+            :後攻の勝ち;
+            end
+        else (no)
+        endif
+    endif
+endwhile (no)
+end
+
+detach
+(A)
+:それぞれの色の石の数を数える;
+if(黒の石の数が多い) then(yes)
+    :先攻の勝ち;
+else (no)
+    :後攻の勝ち;
+endif
+:勝敗の表示;
+@enduml

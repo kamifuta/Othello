@@ -1,0 +1,61 @@
+@startuml classDiagram
+namespace Managers{
+    class GameManager
+}
+
+namespace Model{
+    enum ColorType{
+        None,
+        Black,
+        White,
+        SuperBlack,
+        SuperWhite
+    }
+    enum PlayerTurn{
+        Player1,
+        Player2,
+        Player3,
+        Player4,
+    }
+    class Board{
+        ColorType[][] squareArray
+        int side;
+
+        void CreateBoard();
+        void ClearBoard();
+        void PutCenterDiscs();
+    }
+    class Referee{
+        bool CheckFullAllSquare(ColorType[][] squareArray);
+        bool CheckIsOnlyColor(ColorType[][] squareArray);
+        bool JudgeWinner(ColorType[][] squareArray);
+    }
+    class TurnManager{
+        PlayerTurn currentTurn
+
+        void GoToNextTurn();
+    }
+}
+
+namespace View{
+    class DiscObj{
+        void Revere();
+    }
+    class DiscSercher{
+        Vector2 ClickedPoint;
+    }
+}
+
+namespace Presenter{
+    class DiscPresenter{
+        Dictionary<Vector2, Disk> DiscDic;
+    }
+}
+
+namespace Util{
+    class VectorConverter{
+        Vector2 ConvertToSquarePoint(Vector2 ClickedPoint);
+    }
+    
+}
+@enduml
