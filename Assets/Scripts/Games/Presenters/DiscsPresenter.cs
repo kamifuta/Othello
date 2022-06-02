@@ -7,6 +7,8 @@ using Games.Models;
 using Games.Utils;
 using System.Linq;
 using Cysharp.Threading.Tasks;
+using Photon.Pun;
+using Photons;
 
 namespace Games.Presenters
 {
@@ -16,6 +18,8 @@ namespace Games.Presenters
         [SerializeField] private SettablePointsView settablePointsView;
         [SerializeField] private DiscsView discsView;
         [SerializeField] private ClickPointsManager clickPointsManager;
+
+        [SerializeField] private PhotonView photonView;
 
         private Board board = Board.Instance;
         private TurnManager turnManager = TurnManager.Instance;
@@ -99,9 +103,18 @@ namespace Games.Presenters
                 .Subscribe(x =>
                 {
                     settablePointsView.InvidibleSettablePointObj();
-                    board.PutDiscs(Converter.ConvertToModelPoint(x));
+
+                    //var point = Converter.ConvertToModelPoint(x);
+                    photonView.RPC(nameof(SendPutDiscs), RpcTarget.All, Converter.ConvertToModelPoint(x));
+                    //board.PutDiscs(Converter.ConvertToModelPoint(x));
                 })
                 .AddTo(this);
+        }
+
+        [PunRPC]
+        private void SendPutDiscs(Vector2Int putPoint)
+        {
+            board.PutDiscs(putPoint);
         }
 
         private void ViewChangeObservables()

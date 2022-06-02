@@ -4,6 +4,7 @@ using UnityEngine;
 using UniRx;
 using System;
 using System.Linq;
+using Photon.Pun;
 
 namespace Games.Models
 {
@@ -97,6 +98,8 @@ namespace Games.Models
         //初期配置のディスクを設置する
         private void PutCenterDisc()
         {
+            //if (!PhotonNetwork.IsMasterClient) return;
+
             switch (side)
             {
                 case 8:

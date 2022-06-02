@@ -1,82 +1,49 @@
 using AI;
 using Cysharp.Threading.Tasks;
 using Games.Presenters;
-using System.Collections;
-using System.Collections.Generic;
-using System.Threading;
+using Photon.Pun;
+using Photons;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
 namespace Games.Managers
 {
-    public enum GameMode
-    {
-        WithCPU,
-        WithFriends,
-        Online,
-    }
-
     public class GameManager : MonoBehaviour
     {
-        private DiscsPresenter discsPresenter;
-        private TurnPresenter turnPresenter;
+        private static int playerNum=0;
+        private static int COMNum=0;
 
         private void Start()
         {
+            MyCustomType.Register();
             DontDestroyOnLoad(this);
+
+            if (PhotonNetwork.OfflineMode)
+            {
+                StartGame(playerNum, COMNum);
+            }
+            else
+            {
+                StartGame(PhotonNetwork.CurrentRoom.MaxPlayers, 0);
+            }
+            
         }
 
-        public async void StartGameOffline(int playerNum, int COMNum)
+        public static void SetAllPlayerNum(int playerNum, int COMNum)
         {
-            await SceneManager.LoadSceneAsync("GameScene");
+            GameManager.playerNum = playerNum;
+            GameManager.COMNum = COMNum;
+        }
 
-            FindObjectOfType<CameraManager>().Init(playerNum+COMNum);
+        private void StartGame(int playerNum, int COMNum)
+        {
+            FindObjectOfType<CameraManager>().Init(playerNum + COMNum);
             FindObjectOfType<TurnPresenter>().Init();
-            FindObjectOfType<DiscsPresenter>().Init(playerNum+COMNum);
+            FindObjectOfType<DiscsPresenter>().Init(playerNum + COMNum);
 
             var token = this.GetCancellationTokenOnDestroy();
             FindObjectOfType<AIManager>().GenerateAI(playerNum, COMNum, token);
         }
-
-        public void StartGameOnline(int allPlayerNum)
-        {
-
-        }
-
-
-        //public async void StartGame(int playerNum, GameMode gameMode)
-        //{
-        //    await SceneManager.LoadSceneAsync("GameScene");
-
-        //    FindObjectOfType<CameraManager>().Init(playerNum);
-        //    FindObjectOfType<TurnPresenter>().Init();
-        //    FindObjectOfType<DiscsPresenter>().Init(playerNum);
-            
-        //    var token = this.GetCancellationTokenOnDestroy();
-
-        //    switch (gameMode)
-        //    {
-        //        case GameMode.WithCPU:
-        //            FindObjectOfType<AIManager>().GenerateAI(playerNum, token);
-        //            break;
-        //        case GameMode.WithFriends:
-        //            break;
-        //        case GameMode.Online:
-        //            break;
-        //    }
-        //}
-
-        //private void GenerateAI(int playerNum)
-        //{
-        //    var token = this.GetCancellationTokenOnDestroy();
-
-        //    new RandomPutAI(Players.Player2, token);
-        //    if (playerNum == 2) return;
-        //    new RandomPutAI(Players.Player3, token);
-        //    if (playerNum == 3) return;
-        //    new RandomPutAI(Players.Player4, token);
-        //    if (playerNum == 4) return;
-        //}
 
         public void BackTitle()
         {
