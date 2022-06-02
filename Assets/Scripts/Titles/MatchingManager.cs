@@ -1,5 +1,7 @@
+using Games;
 using Photon.Pun;
 using Photon.Realtime;
+using Photons;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -32,7 +34,8 @@ namespace Titles
             Debug.Log("参加しました"+PhotonNetwork.IsMasterClient);
 
             PhotonNetwork.AutomaticallySyncScene = true;
-            
+            PhotonNetwork.LocalPlayer.SetPlayerType(PhotonNetwork.CurrentRoom.PlayerCount);
+
             joinedRoomSubject.OnNext(Unit.Default);
             joinedRoomSubject.OnCompleted();
         }
@@ -42,7 +45,7 @@ namespace Titles
         {
             // ルームの参加人数を2人に設定する
             var roomOptions = new RoomOptions();
-            roomOptions.MaxPlayers = 2;
+            roomOptions.MaxPlayers =Convert.ToByte(playerNum);
 
             PhotonNetwork.CreateRoom(null, roomOptions);
         }

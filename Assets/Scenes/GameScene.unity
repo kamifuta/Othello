@@ -435,7 +435,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &187997784
 RectTransform:
   m_ObjectHideFlags: 0
@@ -660,7 +660,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _UIManager: {fileID: 1196783624}
-  settablePointsView: {fileID: 115623990}
 --- !u!1 &483917238
 GameObject:
   m_ObjectHideFlags: 0
@@ -985,7 +984,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &593764373
 RectTransform:
   m_ObjectHideFlags: 0
@@ -1860,11 +1859,21 @@ MonoBehaviour:
   passTextObj: {fileID: 1589404412}
   resultPanel: {fileID: 526211542}
   winnerText: {fileID: 483917240}
+  playerInfoPanelsArray:
+  - {fileID: 1441241718}
+  - {fileID: 187997783}
+  - {fileID: 593764372}
+  - {fileID: 1996838014}
   discCountTextArray:
   - {fileID: 329701903}
   - {fileID: 610657365}
   - {fileID: 1491987339}
   - {fileID: 1969960691}
+  nicknameTextArray:
+  - {fileID: 1315534222}
+  - {fileID: 1153937933}
+  - {fileID: 1606529720}
+  - {fileID: 1782197470}
 --- !u!1 &1312810558
 GameObject:
   m_ObjectHideFlags: 0
@@ -2081,7 +2090,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &1441241719
 RectTransform:
   m_ObjectHideFlags: 0
@@ -2751,7 +2760,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &1996838015
 RectTransform:
   m_ObjectHideFlags: 0
@@ -2895,6 +2904,50 @@ Transform:
   - {fileID: 1196783623}
   m_Father: {fileID: 0}
   m_RootOrder: 7
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &2103349082
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2103349084}
+  - component: {fileID: 2103349083}
+  m_Layer: 0
+  m_Name: PhotonManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &2103349083
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2103349082}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ce92e6de5b207ca4d9fb3d2b423ae8df, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _UIManager: {fileID: 1196783624}
+--- !u!4 &2103349084
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2103349082}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 960, y: 540, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 13
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &2131619296
 GameObject:

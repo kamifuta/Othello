@@ -6,6 +6,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using System;
 using UniRx;
+using Games.Managers;
 
 namespace Games.Views
 {
@@ -20,16 +21,33 @@ namespace Games.Views
         [SerializeField] private GameObject resultPanel;
         [SerializeField] private Text winnerText;
 
+        [SerializeField] private GameObject[] playerInfoPanelsArray;
         [SerializeField] private Text[] discCountTextArray;
-
-        private Subject<Unit> finishShowUISubject = new Subject<Unit>();
-        public IObservable<Unit> FinishShowUIObservable => finishShowUISubject.AsObservable();
+        [SerializeField] private Text[] nicknameTextArray;
 
         private CancellationToken token;
 
         private void Start()
         {
             token = this.GetCancellationTokenOnDestroy();
+        }
+
+        //プレイヤー情報を必要な数だけ表示
+        public void VisiblePlayerInfoPanels(int playerNum)
+        {
+            for(int i = 0; i < playerNum; i++)
+            {
+                playerInfoPanelsArray[i].SetActive(true);
+            }
+        }
+
+        public void SetNickname(IReadOnlyList<string> nicknames)
+        {
+            var count = nicknames.Count;
+            for(int i = 0; i < count; i++)
+            {
+                nicknameTextArray[i].text = nicknames[i];
+            }
         }
 
         public void SetCurrentTurnText(string text)

@@ -104,9 +104,7 @@ namespace Games.Presenters
                 {
                     settablePointsView.InvidibleSettablePointObj();
 
-                    //var point = Converter.ConvertToModelPoint(x);
                     photonView.RPC(nameof(SendPutDiscs), RpcTarget.All, Converter.ConvertToModelPoint(x));
-                    //board.PutDiscs(Converter.ConvertToModelPoint(x));
                 })
                 .AddTo(this);
         }

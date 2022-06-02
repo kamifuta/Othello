@@ -29,12 +29,18 @@ namespace Titles
         [SerializeField] private GameObject chooseGameModePanel;
         [SerializeField] private GameObject lobyPanel;
         [SerializeField] private GameObject onlineSettingPanel;
+
+        [SerializeField] private InputField nicknameInputField;
         
         private void Start()
         {
             StartButtonObservable();
             JoinedRoomObservables();
             PlayerNumButtonObservables();
+
+            nicknameInputField.OnEndEditAsObservable()
+                .Subscribe(_ => PhotonNetwork.LocalPlayer.NickName = nicknameInputField.text)
+                .AddTo(this);
         }
 
         private void StartButtonObservable()
@@ -64,7 +70,6 @@ namespace Titles
 
                     onlineSettingPanel.SetActive(true);
                     chooseGameModePanel.SetActive(false);
-                    //matchingManager.StartMaching();
                 })
                 .AddTo(this);
 
@@ -82,7 +87,7 @@ namespace Titles
             matchingManager.JoinedRoomObservable
                 .Subscribe(_ =>
                 {
-                    lobyPanel.SetActive(true);
+                    lobyPanel.SetActive(!PhotonNetwork.OfflineMode);
                     onlineSettingPanel.SetActive(false);
 
                     startOnlineButton.interactable = PhotonNetwork.IsMasterClient;

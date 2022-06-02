@@ -1,8 +1,9 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using System.Linq;
 using AI;
+using Photons;
+using Photon.Pun;
 
 namespace Games.Views
 {
@@ -21,6 +22,7 @@ namespace Games.Views
         public void ViewSettablePoints(List<Vector3> pointsList)
         {
             if (_AIManager.CheckAITurn()) return;
+            if (!PhotonNetwork.OfflineMode && !NetworkTurnManager.IsMyTurn()) return;
 
             int pointLength = pointsList.Count;
 

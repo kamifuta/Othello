@@ -12,7 +12,6 @@ namespace Games.Presenters
     public class TurnPresenter : MonoBehaviour
     {
         [SerializeField] private UIManager _UIManager;
-        [SerializeField] private SettablePointsView settablePointsView;
 
         private TurnManager turnManager = TurnManager.Instance;
 

@@ -1,6 +1,7 @@
 using AI;
 using Cysharp.Threading.Tasks;
 using Games.Presenters;
+using Games.Views;
 using Photon.Pun;
 using Photons;
 using UnityEngine;
@@ -40,6 +41,8 @@ namespace Games.Managers
             FindObjectOfType<CameraManager>().Init(playerNum + COMNum);
             FindObjectOfType<TurnPresenter>().Init();
             FindObjectOfType<DiscsPresenter>().Init(playerNum + COMNum);
+
+            FindObjectOfType<UIManager>().VisiblePlayerInfoPanels(playerNum + COMNum);
 
             var token = this.GetCancellationTokenOnDestroy();
             FindObjectOfType<AIManager>().GenerateAI(playerNum, COMNum, token);
