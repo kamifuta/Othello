@@ -11,7 +11,7 @@ namespace Games.Presenters
 {
     public class TurnPresenter : MonoBehaviour
     {
-        [SerializeField] private UIManager _UIManager;
+        [SerializeField] private GameUIView gameUIView;
 
         private TurnManager turnManager = TurnManager.Instance;
 
@@ -27,10 +27,10 @@ namespace Games.Presenters
             turnManager.ChangeTurnObservable
                 .Subscribe(x =>
                 {
-                    _UIManager.SetCurrentTurnText(GetPlayerName(x));
-                    _UIManager.SetCurrentPlayerColor(Converter.ConvertToColor(EnumConverter.ConvertToColorType(turnManager.currentPlayer)));
+                    gameUIView.SetCurrentTurnText(GetPlayerName(x));
+                    gameUIView.SetCurrentPlayerColor(Converter.ConvertToColor(EnumConverter.ConvertToColorType(turnManager.currentPlayer)));
 
-                    _UIManager.UpdateDiscsCount(Referee.CountDiscs().Values.ToList());
+                    gameUIView.UpdateDiscsCount(Referee.CountDiscs().Values.ToList());
                 })
                 .AddTo(this);
         }
@@ -40,7 +40,7 @@ namespace Games.Presenters
             turnManager.CurrentTurnPassObservable
                 .Subscribe(_ =>
                 {
-                    _UIManager.ShowPassText(()=>turnManager.GoToNextTurn());
+                    gameUIView.ShowPassText(()=>turnManager.GoToNextTurn());
                 })
                 .AddTo(this);
         }
@@ -50,7 +50,7 @@ namespace Games.Presenters
             Referee.ResultObservable
                 .Subscribe(x =>
                 {
-                    _UIManager.ShowResult(GetPlayerName(x));
+                    gameUIView.ShowResult(GetPlayerName(x));
                 })
                 .AddTo(this);
         }

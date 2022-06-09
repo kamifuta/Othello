@@ -6,7 +6,7 @@ using UniRx;
 
 namespace Titles
 {
-    public class PlayerSettingManager : MonoBehaviour
+    public class OfflinePlaySettingManager : MonoBehaviour
     {
         [SerializeField] private Button playerCountUpButton;
         [SerializeField] private Button playerCountDownButton;

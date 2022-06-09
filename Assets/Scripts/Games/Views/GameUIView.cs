@@ -10,7 +10,7 @@ using Games.Managers;
 
 namespace Games.Views
 {
-    public class UIManager : MonoBehaviour
+    public class GameUIView : MonoBehaviour
     {
         [SerializeField] private DiscsView discsView;
 

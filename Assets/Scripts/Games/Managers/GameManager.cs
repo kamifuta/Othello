@@ -42,7 +42,7 @@ namespace Games.Managers
             FindObjectOfType<TurnPresenter>().Init();
             FindObjectOfType<DiscsPresenter>().Init(playerNum + COMNum);
 
-            FindObjectOfType<UIManager>().VisiblePlayerInfoPanels(playerNum + COMNum);
+            FindObjectOfType<GameUIView>().VisiblePlayerInfoPanels(playerNum + COMNum);
 
             var token = this.GetCancellationTokenOnDestroy();
             FindObjectOfType<AIManager>().GenerateAI(playerNum, COMNum, token);

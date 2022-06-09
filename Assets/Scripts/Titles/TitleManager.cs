@@ -11,8 +11,8 @@ namespace Titles
 {
     public class TitleManager : MonoBehaviour
     {
-        [SerializeField] private GameManager gameManager;
-        [SerializeField] private PlayerSettingManager playerSettingManager;
+        [SerializeField] private OfflinePlaySettingManager offlinePlaySettingManager;
+        [SerializeField] private OnlinePlaySettingManager onlinePlaySettingManager;
         [SerializeField] private MatchingManager matchingManager;
 
         [SerializeField] private Button playOfflineButton;
@@ -30,7 +30,7 @@ namespace Titles
         [SerializeField] private GameObject lobyPanel;
         [SerializeField] private GameObject onlineSettingPanel;
 
-        [SerializeField] private InputField nicknameInputField;
+        
         
         private void Start()
         {
@@ -38,9 +38,7 @@ namespace Titles
             JoinedRoomObservables();
             PlayerNumButtonObservables();
 
-            nicknameInputField.OnEndEditAsObservable()
-                .Subscribe(_ => PhotonNetwork.LocalPlayer.NickName = nicknameInputField.text)
-                .AddTo(this);
+            
         }
 
         private void StartButtonObservable()
@@ -58,7 +56,7 @@ namespace Titles
             startOfflineButton.OnClickAsObservable()
                 .Subscribe(_ =>
                 {
-                    GameManager.SetAllPlayerNum(playerSettingManager.PlayerNum, playerSettingManager.ComCount);
+                    GameManager.SetAllPlayerNum(offlinePlaySettingManager.PlayerNum, offlinePlaySettingManager.ComCount);
                     SceneManager.LoadSceneAsync("GameScene");
                 })
                 .AddTo(this);
@@ -76,7 +74,7 @@ namespace Titles
             startOnlineButton.OnClickAsObservable()
                 .Subscribe(_ =>
                 {
-                    GameManager.SetAllPlayerNum(2,0);
+                    GameManager.SetAllPlayerNum(PhotonNetwork.CurrentRoom.MaxPlayers,0);
                     PhotonNetwork.LoadLevel("GameScene");
                 })
                 .AddTo(this);
@@ -89,6 +87,8 @@ namespace Titles
                 {
                     lobyPanel.SetActive(!PhotonNetwork.OfflineMode);
                     onlineSettingPanel.SetActive(false);
+
+                    onlinePlaySettingManager.Init();
 
                     startOnlineButton.interactable = PhotonNetwork.IsMasterClient;
                 })
