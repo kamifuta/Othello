@@ -29,16 +29,12 @@ namespace Titles
         [SerializeField] private GameObject chooseGameModePanel;
         [SerializeField] private GameObject lobyPanel;
         [SerializeField] private GameObject onlineSettingPanel;
-
-        
         
         private void Start()
         {
             StartButtonObservable();
             JoinedRoomObservables();
             PlayerNumButtonObservables();
-
-            
         }
 
         private void StartButtonObservable()
