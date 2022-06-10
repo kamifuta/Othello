@@ -659,7 +659,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4883eb7f631a94e4690852abbe3780dc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _UIManager: {fileID: 1196783624}
+  gameUIView: {fileID: 1196783624}
+  discsView: {fileID: 16060185}
 --- !u!1 &483917238
 GameObject:
   m_ObjectHideFlags: 0
@@ -1821,7 +1822,7 @@ GameObject:
   - component: {fileID: 1196783623}
   - component: {fileID: 1196783624}
   m_Layer: 0
-  m_Name: UIManager
+  m_Name: GameUIManager
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -2934,7 +2935,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ce92e6de5b207ca4d9fb3d2b423ae8df, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _UIManager: {fileID: 1196783624}
+  gameUIView: {fileID: 1196783624}
 --- !u!4 &2103349084
 Transform:
   m_ObjectHideFlags: 0

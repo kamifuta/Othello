@@ -22,7 +22,7 @@ namespace Games.Presenters
         [SerializeField] private PhotonView photonView;
 
         private Board board = Board.Instance;
-        private TurnManager turnManager = TurnManager.Instance;
+        //private TurnManager turnManager = TurnManager.Instance;
 
         private Queue<List<GameObject>> changeDiscsQueue = new Queue<List<GameObject>>();
         private Dictionary<Vector2, GameObject> discsPointDic = new Dictionary<Vector2, GameObject>();
@@ -42,7 +42,7 @@ namespace Games.Presenters
             ClickedPointObservables();
             ViewChangeObservables();
 
-            turnManager.SetFirstTurn(playerNum);
+            //turnManager.SetFirstTurn(playerNum);
             clickPointsManager.Init();
         }
 
@@ -121,7 +121,7 @@ namespace Games.Presenters
             discsView.AllDiscsChangeObservable
                 .Subscribe(_ =>
                 {
-                    turnManager.GoToNextTurn();
+                    //turnManager.GoToNextTurn();
                     changeDiscsQueue.Clear();
                 })
                 .AddTo(this);

@@ -6,12 +6,16 @@ using UniRx;
 using Games.Views;
 using Games.Utils;
 using System.Linq;
+using Photon.Pun;
+using Photons;
+using System;
 
 namespace Games.Presenters
 {
     public class TurnPresenter : MonoBehaviour
     {
         [SerializeField] private GameUIView gameUIView;
+        [SerializeField] private DiscsView discsView;
 
         private TurnManager turnManager = TurnManager.Instance;
 
@@ -20,6 +24,18 @@ namespace Games.Presenters
             TurnCgangeObservables();
             PassObservables();
             ResultObservable();
+
+            var turnList = PhotonNetwork.CurrentRoom.GetTurnList().Select(x => (Players)Enum.ToObject(typeof(Players), x)).ToArray();
+            turnManager.SetTurnList(turnList);
+            turnManager.SetFirstTurn();
+
+            discsView.AllDiscsChangeObservable
+                .Subscribe(_ =>
+                {
+                    turnManager.GoToNextTurn();
+                    //changeDiscsQueue.Clear();
+                })
+                .AddTo(this);
         }
 
         private void TurnCgangeObservables()
@@ -27,6 +43,7 @@ namespace Games.Presenters
             turnManager.ChangeTurnObservable
                 .Subscribe(x =>
                 {
+                    Debug.Log("aa");
                     gameUIView.SetCurrentTurnText(GetPlayerName(x));
                     gameUIView.SetCurrentPlayerColor(Converter.ConvertToColor(EnumConverter.ConvertToColorType(turnManager.currentPlayer)));
 

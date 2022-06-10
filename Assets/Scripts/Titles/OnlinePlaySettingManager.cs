@@ -6,6 +6,8 @@ using UnityEngine;
 using UnityEngine.UI;
 using System.Linq;
 using Photons;
+using Games;
+using System;
 
 namespace Titles
 {
@@ -60,20 +62,45 @@ namespace Titles
 
         private void DropDownValueChangedObservables()
         {
-            foreach(var x in turnDropdownArray)
+            for(int i = 0; i < turnDropdownArray.Length; i++)
             {
-                var observable = x.OnValueChangedAsObservable();
+                var observable = turnDropdownArray[i].OnValueChangedAsObservable();
+                var index = i;
 
                 observable
-                    .Zip(observable.Skip(1),(x,y)=> new {oldvalue=x, newValue=y })
+                    .Zip(observable.Skip(1), (x, y) => new { oldvalue = x, newValue = y })
                     .Subscribe(v =>
                     {
-                        var dropdown = turnDropdownArray.Where(s=>s.gameObject!=x.gameObject).FirstOrDefault(t => t.value == v.newValue);
+                        var dropdown = turnDropdownArray.Where(s => s.gameObject != turnDropdownArray[index].gameObject).Where(s => s.IsActive()).FirstOrDefault(t => t.value == v.newValue);
                         if (!dropdown) return;
+                        Debug.Log(dropdown);
                         dropdown.value = v.oldvalue;
+
+                        var turnArray = turnDropdownArray.Where(s => s.IsActive()).OrderBy(y => y.value).Select(h => index).ToArray();
+                        Debug.Log(turnArray[0]);
+                        PhotonNetwork.CurrentRoom.SetTurnList(turnArray);
                     })
                     .AddTo(this);
             }
+
+            //foreach(var x in turnDropdownArray)
+            //{
+            //    var observable = x.OnValueChangedAsObservable();
+
+            //    observable
+            //        .Zip(observable.Skip(1),(x,y)=> new {oldvalue=x, newValue=y })
+            //        .Subscribe(v =>
+            //        {
+            //            var dropdown = turnDropdownArray.Where(s=>s.gameObject!=x.gameObject).FirstOrDefault(t => t.value == v.newValue);
+            //            if (!dropdown) return;
+            //            dropdown.value = v.oldvalue;
+
+            //            var turnArray = turnDropdownArray.Where(s => s.IsActive()).OrderBy(y => y.value).Select(h => (Players)Enum.ToObject(typeof(Players),h.value)).ToArray();
+            //            Debug.Log(turnArray.Length);
+            //            //PhotonNetwork.CurrentRoom.SetTurnList(turnArray);
+            //        })
+            //        .AddTo(this);
+            //}
         }
 
         public override void OnRoomPropertiesUpdate(ExitGames.Client.Photon.Hashtable propertiesThatChanged)

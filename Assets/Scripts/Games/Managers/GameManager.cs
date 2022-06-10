@@ -39,8 +39,8 @@ namespace Games.Managers
         private void StartGame(int playerNum, int COMNum)
         {
             FindObjectOfType<CameraManager>().Init(playerNum + COMNum);
-            FindObjectOfType<TurnPresenter>().Init();
             FindObjectOfType<DiscsPresenter>().Init(playerNum + COMNum);
+            FindObjectOfType<TurnPresenter>().Init();
 
             FindObjectOfType<GameUIView>().VisiblePlayerInfoPanels(playerNum + COMNum);
 

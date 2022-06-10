@@ -18,9 +18,9 @@ namespace Photons
             return (room.CustomProperties[RandomTurnKey] is bool isRandom) ? isRandom : true;
         }
 
-        public static List<Players> GetTurnList(this Room room)
+        public static int[] GetTurnList(this Room room)
         {
-            return (room.CustomProperties[TurnKey] is List<Players> turnList) ? turnList : null;
+            return (room.CustomProperties[TurnKey] is int[] turnArray) ? turnArray : null;
         }
 
         public static void SetRandomTurn(this Room room, bool isRandom)
@@ -30,9 +30,9 @@ namespace Photons
             propsToSet.Clear();
         }
 
-        public static void SetTurnList(this Room room, List<Players> turnList)
+        public static void SetTurnList(this Room room, int[] turnArray)
         {
-            propsToSet[TurnKey] = turnList;
+            propsToSet[TurnKey] = turnArray;
             room.SetCustomProperties(propsToSet);
             propsToSet.Clear();
         }

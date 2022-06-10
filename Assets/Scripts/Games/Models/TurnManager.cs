@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using UniRx;
 using UnityEngine;
 
@@ -17,6 +18,7 @@ namespace Games.Models
         private Subject<Unit> currentTurnPassSubject = new Subject<Unit>();
         public IObservable<Unit> CurrentTurnPassObservable => currentTurnPassSubject.AsObservable();
 
+        private Players[] turnArray;
         private Players beforePlayer;
         public Players currentPlayer { get; private set; }
         private Players nextPlayer;
@@ -24,14 +26,25 @@ namespace Games.Models
         private Board board = Board.Instance;
         private int playerNum;
 
-        //最初のターンを設定する
-        public void SetFirstTurn(int playerNum)
+        public void SetTurnList(Players[] turnArray)
         {
-            this.playerNum = playerNum;
+            this.turnArray = turnArray;
+            playerNum = turnArray.Length;
+            foreach(var x in turnArray)
+            {
+                Debug.Log(x);
+            }
+        }
+
+        //最初のターンを設定する
+        public void SetFirstTurn()
+        {
+            //this.playerNum = playerNum;
+            Debug.Log("qqq");
 
             beforePlayer = Players.None;
-            currentPlayer = Players.Player1;
-            nextPlayer = Players.Player2;
+            currentPlayer = turnArray[0];
+            nextPlayer = turnArray[1];
 
             board.SetCurrentColorType(EnumConverter.ConvertToColorType(currentPlayer));
             board.SetSettablePoints();
@@ -43,7 +56,7 @@ namespace Games.Models
         {
             beforePlayer = currentPlayer;
             currentPlayer = nextPlayer;
-            nextPlayer = (int)nextPlayer + 1 > playerNum ? Players.Player1 : nextPlayer + 1;
+            nextPlayer = (int)nextPlayer + 1 > playerNum ? turnArray[0] : nextPlayer + 1;
 
             board.SetCurrentColorType(EnumConverter.ConvertToColorType(currentPlayer));
             bool settable = board.SetSettablePoints();
