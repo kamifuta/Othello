@@ -9,42 +9,42 @@ using UnityEngine.UI;
 
 namespace Titles
 {
-    public class TitleManager : MonoBehaviour
+    public class TitleSceneManager : MonoBehaviour
     {
+        //他のマネージャー
         [SerializeField] private OfflinePlaySettingManager offlinePlaySettingManager;
         [SerializeField] private OnlinePlaySettingManager onlinePlaySettingManager;
         [SerializeField] private MatchingManager matchingManager;
 
-        [SerializeField] private Button playOfflineButton;
-        [SerializeField] private Button playOnlineButton;
+        //オフラインかオンラインかを決めるボタン
+        [SerializeField] private Button chooseOfflineButton;
+        [SerializeField] private Button chooseOnlineButton;
 
+        //ゲーム開始ボタン
         [SerializeField] private Button startOfflineButton;
         [SerializeField] private Button startOnlineButton;
 
-        [SerializeField] private Button TwoPlayerButton;
-        [SerializeField] private Button ThreePlayerButton;
-        [SerializeField] private Button FourPlayerButton;
-
-        [SerializeField] private GameObject playerSettingPanel;
+        //タイトル画面を構成するパネル
         [SerializeField] private GameObject chooseGameModePanel;
-        [SerializeField] private GameObject lobyPanel;
+        [SerializeField] private GameObject offlineSettingPanel;
+        [SerializeField] private GameObject matchingSettingPanel;
         [SerializeField] private GameObject onlineSettingPanel;
-        
+
         private void Start()
         {
-            StartButtonObservable();
+            ExchangePanelObservables();
             JoinedRoomObservables();
-            PlayerNumButtonObservables();
         }
 
-        private void StartButtonObservable()
+        private void ExchangePanelObservables()
         {
-            playOfflineButton.OnClickAsObservable()
+            //オフライン関連のパネル切り替え
+            chooseOfflineButton.OnClickAsObservable()
                 .Subscribe(_ =>
                 {
                     PhotonNetwork.OfflineMode = true;
 
-                    playerSettingPanel.SetActive(true);
+                    offlineSettingPanel.SetActive(true);
                     chooseGameModePanel.SetActive(false);
                 })
                 .AddTo(this);
@@ -57,12 +57,14 @@ namespace Titles
                 })
                 .AddTo(this);
 
-            playOnlineButton.OnClickAsObservable()
+            chooseOnlineButton.OnClickAsObservable()
                 .Subscribe(_ =>
                 {
                     PhotonNetwork.OfflineMode = false;
 
-                    onlineSettingPanel.SetActive(true);
+                    onlinePlaySettingManager.StartRoomSetting();
+
+                    matchingSettingPanel.SetActive(true);
                     chooseGameModePanel.SetActive(false);
                 })
                 .AddTo(this);
@@ -70,7 +72,9 @@ namespace Titles
             startOnlineButton.OnClickAsObservable()
                 .Subscribe(_ =>
                 {
-                    GameManager.SetAllPlayerNum(PhotonNetwork.CurrentRoom.MaxPlayers,0);
+                    onlinePlaySettingManager.SetRandomTurn();
+
+                    GameManager.SetAllPlayerNum(PhotonNetwork.CurrentRoom.MaxPlayers, 0);
                     PhotonNetwork.LoadLevel("GameScene");
                 })
                 .AddTo(this);
@@ -81,39 +85,14 @@ namespace Titles
             matchingManager.JoinedRoomObservable
                 .Subscribe(_ =>
                 {
-                    lobyPanel.SetActive(!PhotonNetwork.OfflineMode);
-                    onlineSettingPanel.SetActive(false);
-
-                    onlinePlaySettingManager.Init();
+                    onlineSettingPanel.SetActive(true);
+                    matchingSettingPanel.SetActive(false);
 
                     startOnlineButton.interactable = PhotonNetwork.IsMasterClient;
                 })
                 .AddTo(this);
         }
 
-        private void PlayerNumButtonObservables()
-        {
-            TwoPlayerButton.OnClickAsObservable()
-                .Subscribe(_ =>
-                {
-                    matchingManager.StartMatching(2);
-                })
-                .AddTo(this);
-
-            ThreePlayerButton.OnClickAsObservable()
-                .Subscribe(_ =>
-                {
-                    matchingManager.StartMatching(3);
-                })
-                .AddTo(this);
-
-            FourPlayerButton.OnClickAsObservable()
-                .Subscribe(_ =>
-                {
-                    matchingManager.StartMatching(4);
-                })
-                .AddTo(this);
-        }
     }
 }
 

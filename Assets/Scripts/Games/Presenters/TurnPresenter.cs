@@ -25,7 +25,12 @@ namespace Games.Presenters
             PassObservables();
             ResultObservable();
 
-            var turnList = PhotonNetwork.CurrentRoom.GetTurnList().Select(x => (Players)Enum.ToObject(typeof(Players), x)).ToArray();
+            var turnList = PhotonNetwork.CurrentRoom.GetTurnArray().Select(x => (Players)Enum.ToObject(typeof(Players), x)).ToArray();
+            foreach(var x in turnList)
+            {
+                Debug.Log(x);
+            }
+            
             turnManager.SetTurnList(turnList);
             turnManager.SetFirstTurn();
 
@@ -43,7 +48,6 @@ namespace Games.Presenters
             turnManager.ChangeTurnObservable
                 .Subscribe(x =>
                 {
-                    Debug.Log("aa");
                     gameUIView.SetCurrentTurnText(GetPlayerName(x));
                     gameUIView.SetCurrentPlayerColor(Converter.ConvertToColor(EnumConverter.ConvertToColorType(turnManager.currentPlayer)));
 

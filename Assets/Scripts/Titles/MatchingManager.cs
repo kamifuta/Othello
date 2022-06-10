@@ -14,37 +14,62 @@ namespace Titles
 {
     public class MatchingManager : MonoBehaviourPunCallbacks
     {
-        [Serializable]
-        private class PlayerInfoPanel
-        {
-            public GameObject panel;
-            public Text nickname;
-        }
-
-        [SerializeField] private InputField nicknameInputField;
-        [SerializeField] private List<PlayerInfoPanel> panels;
+        [SerializeField] private OnlinePlaySettingManager onlinePlaySettingManager;
+        [SerializeField] private Toggle privateRoomToggle;
+        [SerializeField] private InputField roomNameInputField;
+        [SerializeField] private Text roomNameText;
 
         private Subject<Unit> joinedRoomSubject = new Subject<Unit>();
         public IObservable<Unit> JoinedRoomObservable => joinedRoomSubject.AsObservable();
 
         private int playerNum;
-        private int viewedCount = 0;
-        private string nickname = "";
+        private string inputRoomName;
+
+        private void Start()
+        {
+            privateRoomToggle.OnValueChangedAsObservable()
+                .Subscribe(x =>
+                {
+                    roomNameInputField.gameObject.SetActive(x);
+                    roomNameText.gameObject.SetActive(x);
+                })
+                .AddTo(this);
+
+            onlinePlaySettingManager.PlayerNum
+                .Skip(1)
+                .Subscribe(x =>
+                {
+                    StartMatching(x);
+                })
+                .AddTo(this);
+
+            roomNameInputField.OnValueChangedAsObservable()
+                .Subscribe(s => inputRoomName = s)
+                .AddTo(this);
+        }
 
         public void StartMatching(int playerNum)
         {
             this.playerNum = playerNum;
             PhotonNetwork.ConnectUsingSettings();
-
-            nicknameInputField.OnValueChangedAsObservable()
-                .Subscribe(_ => nickname = nicknameInputField.text)
-                .AddTo(this);
         }
 
         public override void OnConnectedToMaster()
         {
-            // ランダムなルームに参加する
-            PhotonNetwork.JoinRandomRoom(null, Convert.ToByte(playerNum));
+            if (privateRoomToggle.isOn)
+            {
+                var roomOptions = new RoomOptions();
+                roomOptions.MaxPlayers = Convert.ToByte(playerNum);
+                roomOptions.IsVisible = !privateRoomToggle.isOn;
+
+                PhotonNetwork.JoinOrCreateRoom(inputRoomName, roomOptions, TypedLobby.Default);
+            }
+            else
+            {
+                roomNameInputField.gameObject.SetActive(false);
+                // ランダムなルームに参加する
+                PhotonNetwork.JoinRandomRoom(null, Convert.ToByte(playerNum));
+            }
         }
 
         public override void OnJoinedRoom()
@@ -53,9 +78,10 @@ namespace Titles
 
             PhotonNetwork.AutomaticallySyncScene = true;
             PhotonNetwork.LocalPlayer.SetPlayerType(PhotonNetwork.CurrentRoom.PlayerCount);
-            PhotonNetwork.LocalPlayer.NickName = nickname;
 
-            ViewPlayerInfoPanels(playerNum);
+            onlinePlaySettingManager.StartPlayerSetting();
+            if (privateRoomToggle.isOn)
+                roomNameText.text = "部屋名：" + inputRoomName;
 
             joinedRoomSubject.OnNext(Unit.Default);
             joinedRoomSubject.OnCompleted();
@@ -64,41 +90,19 @@ namespace Titles
         // ランダムで参加できるルームが存在しないなら、新規でルームを作成する
         public override void OnJoinRandomFailed(short returnCode, string message)
         {
-            // ルームの参加人数を2人に設定する
             var roomOptions = new RoomOptions();
             roomOptions.MaxPlayers =Convert.ToByte(playerNum);
+            roomOptions.IsVisible = !privateRoomToggle.isOn;
 
-            PhotonNetwork.CreateRoom(null, roomOptions);
-        }
-
-        public override void OnPlayerEnteredRoom(Player newPlayer)
-        {
-            SetPlayerNickname(newPlayer);
-        }
-
-        public override void OnPlayerPropertiesUpdate(Player targetPlayer, ExitGames.Client.Photon.Hashtable changedProps)
-        {
-            if (targetPlayer != PhotonNetwork.LocalPlayer) return;
-
-            var players = PhotonNetwork.CurrentRoom.SortedPlayers();
-            foreach (var player in players)
+            if (privateRoomToggle.isOn)
             {
-                SetPlayerNickname(player);
+                PhotonNetwork.CreateRoom(inputRoomName, roomOptions);
             }
-        }
-
-        private void ViewPlayerInfoPanels(int playerNum)
-        {
-            for(int i = 0; i < playerNum; i++)
+            else
             {
-                panels[i].panel.SetActive(true);
+                PhotonNetwork.CreateRoom(null, roomOptions);
             }
-        }
-
-        private void SetPlayerNickname(Player player)
-        {
-            panels[viewedCount].nickname.text = player.NickName;
-            viewedCount++;
+            
         }
     }
 }
