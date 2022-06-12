@@ -56,13 +56,35 @@ namespace Titles
         override public int CPUNum { get; protected set; }
         override public Dictionary<Players, string> nicknameDic { get; protected set; }
 
+        [SerializeField] private Toggle randamToggle;
+        private System.Random random = new System.Random();
+
         private readonly OptionData[] DropdownOptionArray = { new OptionData("1st"), new OptionData("2st"), new OptionData("3st"), new OptionData("4st") };
 
         public void Init()
         {
             DontDestroyOnLoad(this.gameObject);
 
-            //PlayerInfoクラスの初期化
+            InitPlayerInfos();
+
+            SetDropdownOptions();
+            DropDownValueChangedObservables();
+            ChangePlayerTypeButtonClickedObservables();
+            PlayerTypeChangeObservable();
+            SetTurn();
+            RandomTurnChangeObservables();
+
+            this.ObserveEveryValueChanged(x=>x.allPlayerNum)
+                .Subscribe(x =>
+                {
+                    AdjustDropdoenOption(x);
+                })
+                .AddTo(this);
+        }
+
+        //PlayerInfoクラスの初期化
+        private void InitPlayerInfos()
+        {
             for (int i = 0; i < MaxPlayerNum; i++)
             {
                 playerInfoArray[i] = new PlayerInfo((Players)Enum.ToObject(typeof(Players), i + 1), playerInfoObjectArray[i]);
@@ -84,18 +106,6 @@ namespace Titles
                     ViewNonePlayerInfo(playerInfoObjectArray[i]);
                 }
             }
-
-            SetDropdownOptions();
-            DropDownValueChangedObservables();
-            ChangePlayerTypeButtonClickedObservables();
-            PlayerTypeChangeObservable();
-
-            this.ObserveEveryValueChanged(x=>x.allPlayerNum)
-                .Subscribe(x =>
-                {
-                    AdjustDropdoenOption(x);
-                })
-                .AddTo(this);
         }
 
         //ドロップダウンのoptionを設定する
@@ -120,7 +130,29 @@ namespace Titles
         //ターンの設定
         private void SetTurn()
         {
-            turnArray = playerInfoArray.OrderBy(x => x.playerInfoObject.dropdown.value).Select(x => x.players).ToArray();
+            turnArray = playerInfoArray.OrderBy(x => x.playerInfoObject.dropdown.value).Select(x => x.players).Take(allPlayerNum).ToArray();
+        }
+
+        //ランダムなターンの設定
+        private void SetRandomTurn()
+        {
+            turnArray = turnArray.OrderBy(x => random.Next()).ToArray();
+        }
+
+        //トグルを切り替えた時にターンの設定ができないようにする
+        private void RandomTurnChangeObservables()
+        {
+            randamToggle.OnValueChangedAsObservable()
+                .Subscribe(x =>
+                {
+                    foreach (var infoObj in playerInfoObjectArray)
+                    {
+                        infoObj.dropdown.interactable = !x;
+                    }
+
+                    SetRandomTurn();
+                })
+                .AddTo(this);
         }
 
         //ドロップダウンの切り替え
@@ -182,6 +214,7 @@ namespace Titles
             }
         }
 
+        //プレイヤータイプを変更したときの処理
         private void PlayerTypeChangeObservable()
         {
             foreach(var x in playerInfoArray)

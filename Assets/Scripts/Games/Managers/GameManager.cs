@@ -27,23 +27,22 @@ namespace Games.Managers
             {
                 await SceneManager.LoadSceneAsync("GameScene");
                 StartGame(offlineSetting);
+                Destroy(offlineSetting.gameObject);
             }
             else
             {
                 PhotonNetwork.LoadLevel("GameScene");
                 await UniTask.WaitUntil(() => SceneManager.GetActiveScene().name == "GameScene");
                 StartGame(onlineSetting);
+                Destroy(onlineSetting.gameObject);
             }
-
-            Destroy(onlineSetting.gameObject);
-            Destroy(offlineSetting.gameObject);
         }
 
         private void StartGame(BasePlaySetting playSetting)
         {
             FindObjectOfType<CameraManager>().Init(playSetting.allPlayerNum);
             FindObjectOfType<DiscsPresenter>().Init(playSetting.allPlayerNum);
-            FindObjectOfType<TurnPresenter>().Init();
+            FindObjectOfType<TurnPresenter>().Init(playSetting.turnArray);
 
             FindObjectOfType<GameUIView>().VisiblePlayerInfoPanels(playSetting.allPlayerNum);
 

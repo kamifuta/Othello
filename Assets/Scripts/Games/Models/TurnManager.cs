@@ -30,10 +30,6 @@ namespace Games.Models
         {
             this.turnArray = turnArray;
             playerNum = turnArray.Length;
-            foreach(var x in turnArray)
-            {
-                Debug.Log(x);
-            }
         }
 
         //Å‰‚Ìƒ^[ƒ“‚ğİ’è‚·‚é

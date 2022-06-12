@@ -19,15 +19,15 @@ namespace Games.Presenters
 
         private TurnManager turnManager = TurnManager.Instance;
 
-        public void Init()
+        public void Init(Players[] turnArray)
         {
             TurnCgangeObservables();
             PassObservables();
             ResultObservable();
 
-            var turnList = PhotonNetwork.CurrentRoom.GetTurnArray().Select(x => (Players)Enum.ToObject(typeof(Players), x)).ToArray();
+            //var turnList = PhotonNetwork.CurrentRoom.GetTurnArray().Select(x => (Players)Enum.ToObject(typeof(Players), x)).ToArray();
             
-            turnManager.SetTurnList(turnList);
+            turnManager.SetTurnList(turnArray);
             turnManager.SetFirstTurn();
 
             discsView.AllDiscsChangeObservable
