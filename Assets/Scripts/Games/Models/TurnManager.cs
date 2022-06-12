@@ -39,9 +39,6 @@ namespace Games.Models
         //Å‰‚Ìƒ^[ƒ“‚ğİ’è‚·‚é
         public void SetFirstTurn()
         {
-            //this.playerNum = playerNum;
-            Debug.Log("qqq");
-
             beforePlayer = Players.None;
             currentPlayer = turnArray[0];
             nextPlayer = turnArray[1];

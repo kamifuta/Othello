@@ -35,7 +35,7 @@ namespace Titles
                 })
                 .AddTo(this);
 
-            onlinePlaySettingManager.PlayerNum
+            onlinePlaySettingManager.ObserveEveryValueChanged(x=>x.allPlayerNum)
                 .Skip(1)
                 .Subscribe(x =>
                 {

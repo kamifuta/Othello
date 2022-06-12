@@ -14,7 +14,7 @@ using Random = System.Random;
 
 namespace Titles
 {
-    public class OnlinePlaySettingManager : MonoBehaviourPunCallbacks
+    public class OnlinePlaySettingManager : BasePlaySetting
     {
         [Serializable]
         private class PlayerInfoObject
@@ -28,8 +28,8 @@ namespace Titles
         [SerializeField] private Button twoPlayerButton;
         [SerializeField] private Button threePlayerButton;
         [SerializeField] private Button fourPlayerButton;
-        private ReactiveProperty<int> playerNum = new ReactiveProperty<int>();
-        public IReadOnlyReactiveProperty<int> PlayerNum => playerNum;
+        //private ReactiveProperty<int> playerNumProperty = new ReactiveProperty<int>();
+        //public IReadOnlyReactiveProperty<int> PlayerNumProperty => playerNumProperty;
 
         //プレイヤーの名前関連
         [SerializeField] private InputField nicknameinputField;
@@ -41,19 +41,28 @@ namespace Titles
         //プレイヤー情報を表示するパネル
         [SerializeField] private PlayerInfoObject[] playerInfoObjectArray;
 
+        //インターフェースの実装
+        override public Players[] turnArray { get; protected set; }
+        override public int allPlayerNum => playerNum;
+        override public int playerNum { get; protected set; }
+        override public int CPUNum { get; protected set; } = 0;
+        override public Dictionary<Players, string> nicknameDic { get; protected set; } = new Dictionary<Players, string>();
+
         public bool IsRandomTurn { get; private set; } = true;
 
         private PlayerInfoObject[] activeInfoObjectArray;
-        private int[] turnArray;
+        private Dictionary<Players, Dropdown> turnDropdownDic = new Dictionary<Players, Dropdown>();
         private Random random = new Random();
 
-        private readonly string[] DropDownOptionArray = { "1st", "2nd", "3rd", "4th" };
+        private readonly OptionData[] DropDownOptionArray = { new OptionData("1st"), new OptionData("2st"), new OptionData("3st"), new OptionData("4st") };
 
         //ルームに入る前
         public void StartRoomSetting()
         {
+            DontDestroyOnLoad(this.gameObject);
+
             PlayerButtonObservable();
-            SetNickname();
+            SetMyNickname();
         }
 
         //プレイヤー人数を決めるボタンを押したときの処理
@@ -62,7 +71,7 @@ namespace Titles
             twoPlayerButton.OnClickAsObservable()
                 .Subscribe(_ =>
                 {
-                    playerNum.Value = 2;
+                    playerNum = 2;
                     PhotonNetwork.LocalPlayer.NickName = inputNickname;
                 })
                 .AddTo(this);
@@ -70,7 +79,7 @@ namespace Titles
             threePlayerButton.OnClickAsObservable()
                 .Subscribe(_ =>
                 {
-                    playerNum.Value = 3;
+                    playerNum = 3;
                     PhotonNetwork.LocalPlayer.NickName = inputNickname;
                 })
                 .AddTo(this);
@@ -78,14 +87,14 @@ namespace Titles
             fourPlayerButton.OnClickAsObservable()
                 .Subscribe(_ =>
                 {
-                    playerNum.Value = 4;
+                    playerNum = 4;
                     PhotonNetwork.LocalPlayer.NickName = inputNickname;
                 })
                 .AddTo(this);
         }
 
         //入力したニックネームを適宜更新する
-        private void SetNickname()
+        private void SetMyNickname()
         {
             nicknameinputField.OnValueChangedAsObservable()
                 .Subscribe(s => inputNickname = s)
@@ -96,12 +105,12 @@ namespace Titles
         public void StartPlayerSetting()
         {
             //ターン設定をデフォルトにする（入った順）
-            turnArray = new int[playerNum.Value];
-            for(int i = 0; i < playerNum.Value; i++)
+            turnArray = new Players[playerNum];
+            for(int i = 0; i < playerNum; i++)
             {
-                turnArray[i] = i + 1;
+                turnArray[i] = (Players)Enum.ToObject(typeof(Players), i + 1);
             }
-            PhotonNetwork.CurrentRoom.SetTurnArray(turnArray);
+            PhotonNetwork.CurrentRoom.SetTurnArray(turnArray.Select(x => (int)x).ToArray());
 
             ViewPlayerPanels();
             SetPanelPosition();
@@ -116,7 +125,7 @@ namespace Titles
         //表示するパネルの枚数を決める
         private void ViewPlayerPanels()
         {
-            activeInfoObjectArray = playerInfoObjectArray.Take(playerNum.Value).ToArray();
+            activeInfoObjectArray = playerInfoObjectArray.Take(playerNum).ToArray();
             foreach(var x in activeInfoObjectArray)
             {
                 x.panel.SetActive(true);
@@ -126,7 +135,7 @@ namespace Titles
         //表示パネルの位置を調整する
         private void SetPanelPosition()
         {
-            var startPositionX = playerNum.Value switch
+            var startPositionX = playerNum switch
             {
                 2 => -100,
                 3 => -200,
@@ -155,9 +164,24 @@ namespace Titles
         {
             foreach (var x in activeInfoObjectArray)
             {
-                for(int i = 0; i < playerNum.Value; i++)
+                for(int i = 0; i < playerNum; i++)
                 {
-                    x.turnDropDown.options.Add(new OptionData(DropDownOptionArray[i]));
+                    x.turnDropDown.options.Add(DropDownOptionArray[i]);
+                }
+            }
+        }
+
+        //ニックネームを格納する
+        private void SetNicknames()
+        {
+            var playerList = PhotonNetwork.CurrentRoom.Players;
+
+            for (int i = 0; i < playerNum; i++)
+            {
+                if (playerList.ContainsKey(i + 1))
+                {
+                    //activeInfoObjectArray[i].nicknameText.text = playerList[i + 1].NickName;
+                    nicknameDic.Add(playerList[i + 1].GetPlayerType(), playerList[i + 1].NickName);
                 }
             }
         }
@@ -165,13 +189,13 @@ namespace Titles
         //ニックネームを表示する
         private void ViewNickname()
         {
-            var playerList = PhotonNetwork.CurrentRoom.Players;
+            //var playerList = PhotonNetwork.CurrentRoom.Players;
 
-            for (int i = 0; i < playerNum.Value; i++)
+            for (int i = 0; i < playerNum; i++)
             {
-                if (playerList.ContainsKey(i+1))
+                if (i+1 <= nicknameDic.Count)
                 {
-                    activeInfoObjectArray[i].nicknameText.text = playerList[i+1].NickName;
+                    activeInfoObjectArray[i].nicknameText.text = nicknameDic.FirstOrDefault(x => (int)x.Key == i + 1).Value;
                 }
                 else
                 {
@@ -186,7 +210,7 @@ namespace Titles
         {
             if (PhotonNetwork.IsMasterClient && !PhotonNetwork.CurrentRoom.IsVisible)
             {
-                if (PhotonNetwork.CurrentRoom.PlayerCount == playerNum.Value)
+                if (PhotonNetwork.CurrentRoom.PlayerCount == playerNum)
                 {
                     randomTurnToggle.interactable = true;
                 }
@@ -216,7 +240,7 @@ namespace Titles
         //ドロップダウンの設定
         private void DropDownValueChangedObservables()
         {
-            for (int i = 0; i < playerNum.Value; i++)
+            for (int i = 0; i < playerNum; i++)
             {
                 var observable = playerInfoObjectArray[i].turnDropDown.OnValueChangedAsObservable();
                 var index = i;
@@ -244,17 +268,17 @@ namespace Titles
             if (PhotonNetwork.IsMasterClient) return;
 
             var turnArray = PhotonNetwork.CurrentRoom.GetTurnArray();
-            for(int i = 0; i < playerNum.Value; i++)
+            for(int i = 0; i < playerNum; i++)
             {
-                activeInfoObjectArray[i].turnDropDown.value = turnArray[i];
+                activeInfoObjectArray[i].turnDropDown.value = (int)turnArray[i]-1;
             }
         }
 
         //順番の設定
         private void SetTurn()
         {
-            turnArray = activeInfoObjectArray.Select(x => x.turnDropDown.value + 1).OrderBy(y => y).ToArray();
-            PhotonNetwork.CurrentRoom.SetTurnArray(turnArray);
+            turnArray = turnDropdownDic.OrderBy(x => x.Value.value).ToDictionary(y => y.Key, z => z.Value).Keys.ToArray();
+            PhotonNetwork.CurrentRoom.SetTurnArray(turnArray.Select(x=>(int)x).ToArray());
         }
 
         //順番をランダムにする
@@ -263,26 +287,25 @@ namespace Titles
             if (!randomTurnToggle.isOn) return;
 
             turnArray = turnArray.OrderBy(x => random.Next()).ToArray();
-            PhotonNetwork.CurrentRoom.SetTurnArray(turnArray);
-
-            foreach (var x in turnArray)
-            {
-                Debug.Log("aaa"+x);
-            }
+            PhotonNetwork.CurrentRoom.SetTurnArray(turnArray.Select(x => (int)x).ToArray());
         }
 
         //ルームプロパティの変更時
-        public override void OnRoomPropertiesUpdate(ExitGames.Client.Photon.Hashtable propertiesThatChanged)
+        public void OnRoomPropertiesUpdate(ExitGames.Client.Photon.Hashtable propertiesThatChanged)
         {
             UpdataTurnDropdowns();
         }
 
         //プレイヤーが入ってきたときの処理
-        public override void OnPlayerEnteredRoom(Player newPlayer)
+        public void OnPlayerEnteredRoom(Player newPlayer)
         {
+            SetNicknames();
             ViewNickname();
 
-            activeInfoObjectArray[PhotonNetwork.CurrentRoom.PlayerCount-1].turnDropDown.value = PhotonNetwork.CurrentRoom.PlayerCount - 1;
+            var infoObject = activeInfoObjectArray[PhotonNetwork.CurrentRoom.PlayerCount - 1];
+
+            turnDropdownDic.Add(newPlayer.GetPlayerType(), infoObject.turnDropDown);
+            infoObject.turnDropDown.value = PhotonNetwork.CurrentRoom.PlayerCount - 1;
         }
     }
 }

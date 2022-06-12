@@ -15,6 +15,7 @@ namespace Titles
         [SerializeField] private OfflinePlaySettingManager offlinePlaySettingManager;
         [SerializeField] private OnlinePlaySettingManager onlinePlaySettingManager;
         [SerializeField] private MatchingManager matchingManager;
+        [SerializeField] private GameManager gameManager;
 
         //オフラインかオンラインかを決めるボタン
         [SerializeField] private Button chooseOfflineButton;
@@ -44,6 +45,8 @@ namespace Titles
                 {
                     PhotonNetwork.OfflineMode = true;
 
+                    offlinePlaySettingManager.Init();
+
                     offlineSettingPanel.SetActive(true);
                     chooseGameModePanel.SetActive(false);
                 })
@@ -52,8 +55,7 @@ namespace Titles
             startOfflineButton.OnClickAsObservable()
                 .Subscribe(_ =>
                 {
-                    GameManager.SetAllPlayerNum(offlinePlaySettingManager.PlayerNum, offlinePlaySettingManager.ComCount);
-                    SceneManager.LoadSceneAsync("GameScene");
+                    gameManager.LoadGameScene();
                 })
                 .AddTo(this);
 
@@ -74,8 +76,7 @@ namespace Titles
                 {
                     onlinePlaySettingManager.SetRandomTurn();
 
-                    GameManager.SetAllPlayerNum(PhotonNetwork.CurrentRoom.MaxPlayers, 0);
-                    PhotonNetwork.LoadLevel("GameScene");
+                    gameManager.LoadGameScene();
                 })
                 .AddTo(this);
         }
@@ -85,6 +86,8 @@ namespace Titles
             matchingManager.JoinedRoomObservable
                 .Subscribe(_ =>
                 {
+                    if (PhotonNetwork.OfflineMode) return;
+
                     onlineSettingPanel.SetActive(true);
                     matchingSettingPanel.SetActive(false);
 

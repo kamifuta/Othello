@@ -4,6 +4,7 @@ using Games.Presenters;
 using Games.Views;
 using Photon.Pun;
 using Photons;
+using Titles;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -11,47 +12,49 @@ namespace Games.Managers
 {
     public class GameManager : MonoBehaviour
     {
-        private static int playerNum=0;
-        private static int COMNum=0;
+        [SerializeField] BasePlaySetting offlineSetting;
+        [SerializeField] BasePlaySetting onlineSetting;
 
         private void Start()
         {
             MyCustomType.Register();
             DontDestroyOnLoad(this);
+        }
 
+        public async void LoadGameScene()
+        {
             if (PhotonNetwork.OfflineMode)
             {
-                StartGame(playerNum, COMNum);
+                await SceneManager.LoadSceneAsync("GameScene");
+                StartGame(offlineSetting);
             }
             else
             {
-                StartGame(PhotonNetwork.CurrentRoom.MaxPlayers, 0);
+                PhotonNetwork.LoadLevel("GameScene");
+                await UniTask.WaitUntil(() => SceneManager.GetActiveScene().name == "GameScene");
+                StartGame(onlineSetting);
             }
-            
+
+            Destroy(onlineSetting.gameObject);
+            Destroy(offlineSetting.gameObject);
         }
 
-        public static void SetAllPlayerNum(int playerNum, int COMNum)
+        private void StartGame(BasePlaySetting playSetting)
         {
-            GameManager.playerNum = playerNum;
-            GameManager.COMNum = COMNum;
-        }
-
-        private void StartGame(int playerNum, int COMNum)
-        {
-            FindObjectOfType<CameraManager>().Init(playerNum + COMNum);
-            FindObjectOfType<DiscsPresenter>().Init(playerNum + COMNum);
+            FindObjectOfType<CameraManager>().Init(playSetting.allPlayerNum);
+            FindObjectOfType<DiscsPresenter>().Init(playSetting.allPlayerNum);
             FindObjectOfType<TurnPresenter>().Init();
 
-            FindObjectOfType<GameUIView>().VisiblePlayerInfoPanels(playerNum + COMNum);
+            FindObjectOfType<GameUIView>().VisiblePlayerInfoPanels(playSetting.allPlayerNum);
 
             var token = this.GetCancellationTokenOnDestroy();
-            FindObjectOfType<AIManager>().GenerateAI(playerNum, COMNum, token);
+            FindObjectOfType<AIManager>().GenerateAI(playSetting.playerNum, playSetting.CPUNum, token);
         }
 
         public void BackTitle()
         {
             SceneManager.LoadScene("TitleScene");
-            Destroy(this);
+            Destroy(this.gameObject);
         }
     }
 }

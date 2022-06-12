@@ -26,10 +26,6 @@ namespace Games.Presenters
             ResultObservable();
 
             var turnList = PhotonNetwork.CurrentRoom.GetTurnArray().Select(x => (Players)Enum.ToObject(typeof(Players), x)).ToArray();
-            foreach(var x in turnList)
-            {
-                Debug.Log(x);
-            }
             
             turnManager.SetTurnList(turnList);
             turnManager.SetFirstTurn();
@@ -38,7 +34,6 @@ namespace Games.Presenters
                 .Subscribe(_ =>
                 {
                     turnManager.GoToNextTurn();
-                    //changeDiscsQueue.Clear();
                 })
                 .AddTo(this);
         }

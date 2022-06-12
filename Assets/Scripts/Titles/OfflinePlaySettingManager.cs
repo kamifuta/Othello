@@ -3,138 +3,252 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using UniRx;
+using static UnityEngine.UI.Dropdown;
+using System.Linq;
+using System;
+using Games;
+using UniRx.Triggers;
 
 namespace Titles
 {
-    public class OfflinePlaySettingManager : MonoBehaviour
+    public class OfflinePlaySettingManager : BasePlaySetting
     {
-        [SerializeField] private Button playerCountUpButton;
-        [SerializeField] private Button playerCountDownButton;
-        [SerializeField] private Text playerCountText;
-
-        [SerializeField] private Button _COMCountUpButton;
-        [SerializeField] private Button _COMCountDownButton;
-        [SerializeField] private Text _COMCountText;
-
-        private ReactiveProperty<int> playerNum = new ReactiveProperty<int>(2);
-        private ReactiveProperty<int> _COMNum = new ReactiveProperty<int>(2);
-
-        public int PlayerNum => playerNum.Value;
-        public int ComCount => _COMNum.Value;
-
-        // Start is called before the first frame update
-        void Start()
+        private enum PlayerType
         {
-            PlayerCountObservables();
-            COMCountObservables();
+            None=0,
+            Player=1,
+            CPU=2
         }
 
-        private void PlayerCountObservables()
+        [Serializable]
+        private class PlayerInfoObject
         {
-            playerCountUpButton.OnClickAsObservable()
-                .Subscribe(_ =>
+            public GameObject panel;
+            public InputField nicknameInputField;
+            public Dropdown dropdown;
+            public Text playerOrCPUText;
+            public Button rightButton;
+            public Button leftButton;
+        }
+
+        private class PlayerInfo
+        {
+            public PlayerType playerType;
+            public Players players;
+            public PlayerInfoObject playerInfoObject;
+
+            public PlayerInfo(Players players, PlayerInfoObject infoObject)
+            {
+                this.players = players;
+                this.playerInfoObject = infoObject;
+            }
+        }
+
+        private const int MaxPlayerNum = 4;
+
+        [SerializeField] private PlayerInfoObject[] playerInfoObjectArray;
+        private PlayerInfo[] playerInfoArray = new PlayerInfo[MaxPlayerNum];
+
+        //インターフェースの実装
+        override public Players[] turnArray { get; protected set; }
+        override public int allPlayerNum => playerNum + CPUNum;
+        override public int playerNum { get; protected set; }
+        override public int CPUNum { get; protected set; }
+        override public Dictionary<Players, string> nicknameDic { get; protected set; }
+
+        private readonly OptionData[] DropdownOptionArray = { new OptionData("1st"), new OptionData("2st"), new OptionData("3st"), new OptionData("4st") };
+
+        public void Init()
+        {
+            DontDestroyOnLoad(this.gameObject);
+
+            //PlayerInfoクラスの初期化
+            for (int i = 0; i < MaxPlayerNum; i++)
+            {
+                playerInfoArray[i] = new PlayerInfo((Players)Enum.ToObject(typeof(Players), i + 1), playerInfoObjectArray[i]);
+                if (i == 0)
                 {
-                    playerNum.Value++;
-                })
-                .AddTo(this);
-
-            playerCountDownButton.OnClickAsObservable()
-                .Subscribe(_ =>
+                    playerInfoArray[i].playerType = PlayerType.Player;
+                    playerNum++;
+                    ViewPlayerInfo(playerInfoObjectArray[i]);
+                }
+                else if (i == 1)
                 {
-                    playerNum.Value--;
+                    playerInfoArray[i].playerType = PlayerType.CPU;
+                    CPUNum++;
+                    ViewCPUInfo(playerInfoObjectArray[i]);
+                }
+                else
+                {
+                    playerInfoArray[i].playerType = PlayerType.None;
+                    ViewNonePlayerInfo(playerInfoObjectArray[i]);
+                }
+            }
 
-                    _COMCountUpButton.interactable = true;
-                })
-                .AddTo(this);
+            SetDropdownOptions();
+            DropDownValueChangedObservables();
+            ChangePlayerTypeButtonClickedObservables();
+            PlayerTypeChangeObservable();
 
-            playerNum
+            this.ObserveEveryValueChanged(x=>x.allPlayerNum)
                 .Subscribe(x =>
                 {
-                    playerCountText.text = x.ToString();
-
-                    if (x == 1)
-                    {
-                        playerCountUpButton.interactable = true;
-                        playerCountDownButton.interactable = false;
-
-                        _COMNum.Value = Mathf.Clamp(_COMNum.Value, 1, 3);
-                    }
-                    else if (x == 2)
-                    {
-                        playerCountUpButton.interactable = true;
-                        playerCountDownButton.interactable = true;
-
-                        _COMNum.Value = Mathf.Clamp(_COMNum.Value, 0, 2);
-                    }
-                    else if (x == 3)
-                    {
-                        playerCountUpButton.interactable = true;
-                        playerCountDownButton.interactable = true;
-
-                        _COMNum.Value = Mathf.Clamp(_COMNum.Value, 0, 1);
-                    }
-                    else if (x == 4)
-                    {
-                        playerCountUpButton.interactable = false;
-                        playerCountDownButton.interactable = true;
-
-                        _COMNum.Value = 0;
-                    }
-                    else
-                    {
-                        playerCountUpButton.interactable = true;
-                        playerCountDownButton.interactable = true;
-                    }
+                    AdjustDropdoenOption(x);
                 })
                 .AddTo(this);
         }
 
-        private void COMCountObservables()
+        //ドロップダウンのoptionを設定する
+        private void SetDropdownOptions()
         {
-            _COMCountUpButton.OnClickAsObservable()
-                .Subscribe(_ =>
-                {
-                    _COMNum.Value++;
-                })
-                .AddTo(this);
-
-            _COMCountDownButton.OnClickAsObservable()
-                .Subscribe(_ =>
-                {
-                    _COMNum.Value--;
-                })
-                .AddTo(this);
-
-            _COMNum
-                .Subscribe(x =>
-                {
-                    _COMCountText.text = x.ToString();
-
-                    if (x == 0)
-                    {
-                        _COMCountUpButton.interactable = true;
-                        _COMCountDownButton.interactable = false;
-                    }
-                    else if (x == 3)
-                    {
-                        _COMCountUpButton.interactable = false;
-                        _COMCountDownButton.interactable = true;
-                    }
-                    else
-                    {
-                        _COMCountUpButton.interactable = true;
-                        _COMCountDownButton.interactable = true;
-                    }
-
-                    if (x >= 4 - playerNum.Value)
-                    {
-                        _COMNum.Value = 4 - playerNum.Value;
-                        _COMCountUpButton.interactable = false;
-                    }
-                })
-                .AddTo(this);
+            for(int i=0;i< playerInfoObjectArray.Length; i++)
+            {
+                playerInfoObjectArray[i].dropdown.options = DropdownOptionArray.ToList();
+                playerInfoObjectArray[i].dropdown.value = i;
+            }
         }
 
+        //ドロップダウンのOptionを調整
+        private void AdjustDropdoenOption(int optionCount)
+        {
+            foreach(var x in playerInfoObjectArray)
+            {
+                x.dropdown.options = DropdownOptionArray.Take(optionCount).ToList();
+            }
+        }
+
+        //ターンの設定
+        private void SetTurn()
+        {
+            turnArray = playerInfoArray.OrderBy(x => x.playerInfoObject.dropdown.value).Select(x => x.players).ToArray();
+        }
+
+        //ドロップダウンの切り替え
+        private void DropDownValueChangedObservables()
+        {
+            for (int i = 0; i < MaxPlayerNum; i++)
+            {
+                var observable = playerInfoObjectArray[i].dropdown.OnValueChangedAsObservable();
+                var index = i;
+                
+                observable
+                    .Zip(observable.Skip(1), (x, y) => new { oldvalue = x, newValue = y })
+                    .Subscribe(v =>
+                    {
+                        //ドロップダウンの値の入れ替え
+                        var notThisDropdownArray = playerInfoObjectArray.Where(x => x != playerInfoObjectArray[index]).Select(y => y.dropdown).Where(z=>z.gameObject.activeSelf); //自身を除くドロップダウンの配列
+                        var changeDropdown = notThisDropdownArray.FirstOrDefault(x => x.value == v.newValue);
+                        if (!changeDropdown) return;
+                        changeDropdown.value = v.oldvalue;
+
+                        SetTurn();
+                    })
+                    .AddTo(this);
+            }
+        }
+
+        //ボタンを押したときにプレイヤーかCPUかを切り替え
+        private void ChangePlayerTypeButtonClickedObservables()
+        {
+            foreach(var x in playerInfoArray)
+            {
+                x.playerInfoObject.rightButton.OnClickAsObservable()
+                    .Subscribe(_ =>
+                    {
+                        if (x.playerType == PlayerType.CPU)
+                        {
+                            x.playerType = PlayerType.None;
+                        }
+                        else
+                        {
+                            x.playerType++;
+                        }
+                    })
+                    .AddTo(this);
+
+                x.playerInfoObject.leftButton.OnClickAsObservable()
+                    .Subscribe(_ =>
+                    {
+                        if (x.playerType == PlayerType.None)
+                        {
+                            x.playerType = PlayerType.CPU;
+                        }
+                        else
+                        {
+                            x.playerType--;
+                        }
+                    })
+                    .AddTo(this);
+            }
+        }
+
+        private void PlayerTypeChangeObservable()
+        {
+            foreach(var x in playerInfoArray)
+            {
+                var observable = x.ObserveEveryValueChanged(x => x.playerType);
+
+                observable
+                    .Zip(observable.Skip(1), (x, y) => new { oldValue = x, newValue = y })
+                    .Subscribe(v =>
+                    {
+                        switch (v.oldValue)
+                        {
+                            case PlayerType.None:
+                                break;
+                            case PlayerType.Player:
+                                playerNum--;
+                                break;
+                            case PlayerType.CPU:
+                                CPUNum--;
+                                break;
+                        }
+
+                        switch (v.newValue)
+                        {
+                            case PlayerType.None:
+                                ViewNonePlayerInfo(x.playerInfoObject);
+                                break;
+                            case PlayerType.Player:
+                                ViewPlayerInfo(x.playerInfoObject);
+                                playerNum++;
+                                break;
+                            case PlayerType.CPU:
+                                ViewCPUInfo(x.playerInfoObject);
+                                CPUNum++;
+                                break;
+                        }
+                    })
+                    .AddTo(this);
+            }
+        }
+
+        //プレイヤー「無し」の時のパネル表示
+        private void ViewNonePlayerInfo(PlayerInfoObject info)
+        {
+            info.nicknameInputField.gameObject.SetActive(false);
+            info.dropdown.gameObject.SetActive(false);
+
+            info.playerOrCPUText.text = "なし";
+        }
+
+        //プレイヤー「プレイヤー」の時のパネル表示
+        private void ViewPlayerInfo(PlayerInfoObject info)
+        {
+            info.nicknameInputField.gameObject.SetActive(true);
+            info.dropdown.gameObject.SetActive(true);
+
+            info.playerOrCPUText.text = "プレイヤー";
+        }
+
+        //プレイヤー「CPU」の時のパネル表示
+        private void ViewCPUInfo(PlayerInfoObject info)
+        {
+            info.nicknameInputField.gameObject.SetActive(true);
+            info.dropdown.gameObject.SetActive(true);
+
+            info.playerOrCPUText.text = "CPU";
+        }
     }
 } 
 

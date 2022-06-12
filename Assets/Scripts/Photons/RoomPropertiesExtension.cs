@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using Photon.Realtime;
 using UnityEngine;
 using Games;
+using System.Linq;
+using System;
 
 namespace Photons
 {
@@ -18,9 +20,9 @@ namespace Photons
             return (room.CustomProperties[RandomTurnKey] is bool isRandom) ? isRandom : true;
         }
 
-        public static int[] GetTurnArray(this Room room)
+        public static Players[] GetTurnArray(this Room room)
         {
-            return (room.CustomProperties[TurnKey] is int[] turnArray) ? turnArray : null;
+            return (room.CustomProperties[TurnKey] is int[] turnArray) ? turnArray.Select(x=>(Players)Enum.ToObject(typeof(Players),x)).ToArray() : null;
         }
 
         public static void SetRandomTurn(this Room room, bool isRandom)
