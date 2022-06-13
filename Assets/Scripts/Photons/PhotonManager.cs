@@ -13,15 +13,15 @@ namespace Photons
 
         private void Start()
         {
-            var players = PhotonNetwork.CurrentRoom.SortedPlayers();
-            List<string> nicknameList = new List<string>();
+            //var players = PhotonNetwork.CurrentRoom.SortedPlayers();
+            //List<string> nicknameList = new List<string>();
 
-            foreach(var x in players)
-            {
-                nicknameList.Add(x.NickName);
-            }
+            //foreach(var x in players)
+            //{
+            //    nicknameList.Add(x.NickName);
+            //}
 
-            gameUIView.SetNickname(nicknameList);
+            //gameUIView.SetNickname(nicknameList);
         }
     }
 

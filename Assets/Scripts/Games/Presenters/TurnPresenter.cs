@@ -25,8 +25,6 @@ namespace Games.Presenters
             PassObservables();
             ResultObservable();
 
-            //var turnList = PhotonNetwork.CurrentRoom.GetTurnArray().Select(x => (Players)Enum.ToObject(typeof(Players), x)).ToArray();
-            
             turnManager.SetTurnList(turnArray);
             turnManager.SetFirstTurn();
 

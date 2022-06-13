@@ -7,6 +7,7 @@ using UnityEngine.UI;
 using System;
 using UniRx;
 using Games.Managers;
+using System.Linq;
 
 namespace Games.Views
 {
@@ -27,15 +28,17 @@ namespace Games.Views
 
         private CancellationToken token;
 
-        private void Start()
+        public void Init(int allPlayerNum, Dictionary<Players, string> nicknameDic)
         {
             token = this.GetCancellationTokenOnDestroy();
+            VisiblePlayerInfoPanels(allPlayerNum);
+            SetNickname(nicknameDic.Values.ToList());
         }
 
         //プレイヤー情報を必要な数だけ表示
-        public void VisiblePlayerInfoPanels(int playerNum)
+        public void VisiblePlayerInfoPanels(int allPlayerNum)
         {
-            for(int i = 0; i < playerNum; i++)
+            for(int i = 0; i < allPlayerNum; i++)
             {
                 playerInfoPanelsArray[i].SetActive(true);
             }
@@ -47,6 +50,7 @@ namespace Games.Views
             for(int i = 0; i < count; i++)
             {
                 nicknameTextArray[i].text = nicknames[i];
+                Debug.Log(nicknames[i]);
             }
         }
 

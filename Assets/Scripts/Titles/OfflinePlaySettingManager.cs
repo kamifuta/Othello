@@ -54,7 +54,13 @@ namespace Titles
         override public int allPlayerNum => playerNum + CPUNum;
         override public int playerNum { get; protected set; }
         override public int CPUNum { get; protected set; }
-        override public Dictionary<Players, string> nicknameDic { get; protected set; }
+        override public Dictionary<Players, string> nicknameDic { get; protected set; } = new Dictionary<Players, string>()
+        {
+            {Players.Player1,"Player1" },
+            {Players.Player2,"Player2" },
+            {Players.Player3,"Player3" },
+            {Players.Player4,"Player4" },
+        };
         override public Players[] CPUArray => playerInfoArray.Where(x => x.playerType == PlayerType.CPU).Select(y => y.players).ToArray();
 
         [SerializeField] private Toggle randamToggle;
@@ -74,6 +80,7 @@ namespace Titles
             PlayerTypeChangeObservable();
             SetTurn();
             RandomTurnChangeObservables();
+            NickNameChangeObservables();
 
             this.ObserveEveryValueChanged(x=>x.allPlayerNum)
                 .Subscribe(x =>
@@ -282,6 +289,19 @@ namespace Titles
             info.dropdown.gameObject.SetActive(true);
 
             info.playerOrCPUText.text = "CPU";
+        }
+
+        public void NickNameChangeObservables()
+        {
+            foreach(var x in playerInfoArray)
+            {
+                x.playerInfoObject.nicknameInputField.OnValueChangedAsObservable()
+                    .Subscribe(s =>
+                    {
+                        nicknameDic[x.players] = s;
+                    })
+                    .AddTo(this);
+            }
         }
     }
 } 

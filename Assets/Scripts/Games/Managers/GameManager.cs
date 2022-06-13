@@ -4,6 +4,7 @@ using Games.Presenters;
 using Games.Views;
 using Photon.Pun;
 using Photons;
+using System.Collections.Generic;
 using Titles;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -14,6 +15,8 @@ namespace Games.Managers
     {
         [SerializeField] BasePlaySetting offlineSetting;
         [SerializeField] BasePlaySetting onlineSetting;
+
+        private Dictionary<Players, string> nicknameDic;
 
         private void Start()
         {
@@ -27,6 +30,7 @@ namespace Games.Managers
             {
                 await SceneManager.LoadSceneAsync("GameScene");
                 StartGame(offlineSetting);
+                nicknameDic = offlineSetting.nicknameDic;
                 Destroy(offlineSetting.gameObject);
             }
             else
@@ -34,6 +38,7 @@ namespace Games.Managers
                 PhotonNetwork.LoadLevel("GameScene");
                 await UniTask.WaitUntil(() => SceneManager.GetActiveScene().name == "GameScene");
                 StartGame(onlineSetting);
+                nicknameDic = onlineSetting.nicknameDic;
                 Destroy(onlineSetting.gameObject);
             }
         }
@@ -44,7 +49,7 @@ namespace Games.Managers
             FindObjectOfType<DiscsPresenter>().Init(playSetting.allPlayerNum);
             FindObjectOfType<TurnPresenter>().Init(playSetting.turnArray);
 
-            FindObjectOfType<GameUIView>().VisiblePlayerInfoPanels(playSetting.allPlayerNum);
+            FindObjectOfType<GameUIView>().Init(playSetting.allPlayerNum, playSetting.nicknameDic);
 
             var token = this.GetCancellationTokenOnDestroy();
             var _AIManager = FindObjectOfType<AIManager>();
@@ -52,7 +57,6 @@ namespace Games.Managers
             {
                 _AIManager.GenerateAI(x, token);
             }
-            //FindObjectOfType<AIManager>().GenerateAI(playSetting.playerNum, playSetting.CPUNum, token);
         }
 
         public void BackTitle()
