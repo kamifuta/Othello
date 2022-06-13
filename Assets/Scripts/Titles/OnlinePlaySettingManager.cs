@@ -181,7 +181,6 @@ namespace Titles
             {
                 if (playerList.ContainsKey(i + 1))
                 {
-                    //activeInfoObjectArray[i].nicknameText.text = playerList[i + 1].NickName;
                     nicknameDic.Add(playerList[i + 1].GetPlayerType(), playerList[i + 1].NickName);
                 }
             }
@@ -190,8 +189,6 @@ namespace Titles
         //ニックネームを表示する
         private void ViewNickname()
         {
-            //var playerList = PhotonNetwork.CurrentRoom.Players;
-
             for (int i = 0; i < playerNum; i++)
             {
                 if (i+1 <= nicknameDic.Count)
@@ -200,7 +197,7 @@ namespace Titles
                 }
                 else
                 {
-                    //ぐるぐるを表示
+                    //TODO: ぐるぐるを表示
                     activeInfoObjectArray[i].nicknameText.text = "";
                 }
             }

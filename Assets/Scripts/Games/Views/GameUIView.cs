@@ -50,7 +50,6 @@ namespace Games.Views
             for(int i = 0; i < count; i++)
             {
                 nicknameTextArray[i].text = nicknames[i];
-                Debug.Log(nicknames[i]);
             }
         }
 

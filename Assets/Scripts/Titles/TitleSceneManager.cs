@@ -55,6 +55,7 @@ namespace Titles
             startOfflineButton.OnClickAsObservable()
                 .Subscribe(_ =>
                 {
+                    offlinePlaySettingManager.SetRandomTurn();
                     gameManager.LoadGameScene();
                 })
                 .AddTo(this);

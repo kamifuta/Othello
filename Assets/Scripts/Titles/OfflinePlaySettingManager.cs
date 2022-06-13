@@ -142,8 +142,10 @@ namespace Titles
         }
 
         //ƒ‰ƒ“ƒ_ƒ€‚Èƒ^[ƒ“‚ÌÝ’è
-        private void SetRandomTurn()
+        public void SetRandomTurn()
         {
+            SetTurn();
+            if (!randamToggle.isOn) return;
             turnArray = turnArray.OrderBy(x => random.Next()).ToArray();
         }
 
@@ -296,6 +298,7 @@ namespace Titles
             foreach(var x in playerInfoArray)
             {
                 x.playerInfoObject.nicknameInputField.OnValueChangedAsObservable()
+                    .Skip(1)
                     .Subscribe(s =>
                     {
                         nicknameDic[x.players] = s;
