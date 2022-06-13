@@ -4,7 +4,6 @@ using UnityEngine;
 using UniRx;
 using System;
 using System.Linq;
-using Photon.Pun;
 
 namespace Games.Models
 {

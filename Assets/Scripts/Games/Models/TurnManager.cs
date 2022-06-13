@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using UniRx;
 using UnityEngine;
 
@@ -18,7 +19,7 @@ namespace Games.Models
         private Subject<Unit> currentTurnPassSubject = new Subject<Unit>();
         public IObservable<Unit> CurrentTurnPassObservable => currentTurnPassSubject.AsObservable();
 
-        private Players[] turnArray;
+        private (Players, Players)[] turnArray;
         private Players beforePlayer;
         public Players currentPlayer { get; private set; }
         private Players nextPlayer;
@@ -28,16 +29,27 @@ namespace Games.Models
 
         public void SetTurnList(Players[] turnArray)
         {
-            this.turnArray = turnArray;
             playerNum = turnArray.Length;
+            this.turnArray = new (Players, Players)[playerNum];
+            
+            for (int i = 0; i < playerNum; i++)
+            {
+                if (i == playerNum - 1)
+                {
+                    this.turnArray[i] = (turnArray[i], turnArray[0]);
+                    continue;
+                }
+                this.turnArray[i] = (turnArray[i], turnArray[i + 1]);
+            }
+            
         }
 
         //Å‰‚Ìƒ^[ƒ“‚ðÝ’è‚·‚é
         public void SetFirstTurn()
         {
             beforePlayer = Players.None;
-            currentPlayer = turnArray[0];
-            nextPlayer = turnArray[1];
+            currentPlayer = turnArray[0].Item1;
+            nextPlayer = turnArray[0].Item2;
 
             board.SetCurrentColorType(EnumConverter.ConvertToColorType(currentPlayer));
             board.SetSettablePoints();
@@ -49,7 +61,7 @@ namespace Games.Models
         {
             beforePlayer = currentPlayer;
             currentPlayer = nextPlayer;
-            nextPlayer = (int)nextPlayer + 1 > playerNum ? turnArray[0] : nextPlayer + 1;
+            nextPlayer = turnArray.FirstOrDefault(x => x.Item1 == nextPlayer).Item2;
 
             board.SetCurrentColorType(EnumConverter.ConvertToColorType(currentPlayer));
             bool settable = board.SetSettablePoints();

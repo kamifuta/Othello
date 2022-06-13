@@ -55,6 +55,7 @@ namespace Titles
         override public int playerNum { get; protected set; }
         override public int CPUNum { get; protected set; }
         override public Dictionary<Players, string> nicknameDic { get; protected set; }
+        override public Players[] CPUArray => playerInfoArray.Where(x => x.playerType == PlayerType.CPU).Select(y => y.players).ToArray();
 
         [SerializeField] private Toggle randamToggle;
         private System.Random random = new System.Random();

@@ -47,6 +47,7 @@ namespace Titles
         override public int playerNum { get; protected set; }
         override public int CPUNum { get; protected set; } = 0;
         override public Dictionary<Players, string> nicknameDic { get; protected set; } = new Dictionary<Players, string>();
+        override public Players[] CPUArray { get; }
 
         public bool IsRandomTurn { get; private set; } = true;
 

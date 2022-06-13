@@ -47,7 +47,12 @@ namespace Games.Managers
             FindObjectOfType<GameUIView>().VisiblePlayerInfoPanels(playSetting.allPlayerNum);
 
             var token = this.GetCancellationTokenOnDestroy();
-            FindObjectOfType<AIManager>().GenerateAI(playSetting.playerNum, playSetting.CPUNum, token);
+            var _AIManager = FindObjectOfType<AIManager>();
+            foreach (var x in playSetting.CPUArray)
+            {
+                _AIManager.GenerateAI(x, token);
+            }
+            //FindObjectOfType<AIManager>().GenerateAI(playSetting.playerNum, playSetting.CPUNum, token);
         }
 
         public void BackTitle()

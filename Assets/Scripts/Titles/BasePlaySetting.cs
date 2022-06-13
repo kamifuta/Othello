@@ -13,6 +13,7 @@ namespace Titles
         abstract public int playerNum { get; protected set; }
         abstract public int CPUNum { get; protected set; }
         abstract public Dictionary<Players, string> nicknameDic { get; protected set; }
+        abstract public Players[] CPUArray { get; }
     }
 }
 

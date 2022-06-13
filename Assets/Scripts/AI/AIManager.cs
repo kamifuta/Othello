@@ -27,6 +27,12 @@ namespace AI
             }
         }
 
+        public void GenerateAI(Players players, CancellationToken token)
+        {
+            new RandomPutAI(players, token);
+            _AIList.Add(players);
+        }
+
         public bool CheckAITurn()
         {
             return _AIList.Any(x => x == turnManager.currentPlayer);
