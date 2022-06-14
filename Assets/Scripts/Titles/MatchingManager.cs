@@ -103,11 +103,6 @@ namespace Titles
                 PhotonNetwork.CreateRoom(null, roomOptions);
             }
         }
-
-        public override void OnPlayerPropertiesUpdate(Player targetPlayer, ExitGames.Client.Photon.Hashtable changedProps)
-        {
-            Debug.Log(targetPlayer.GetPlayerType());
-        }
     }
 }
 

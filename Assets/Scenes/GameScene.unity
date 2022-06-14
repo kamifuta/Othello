@@ -153,7 +153,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   boardParent: {fileID: 491064000}
-  boardPartsPrefab: {fileID: 667668473037579478, guid: 51e82aae69c28d746a150290b4e151d9, type: 3}
+  boardPartsPrefab: {fileID: 9165675094272031971, guid: 311ccf74616e0274995508e4230f0150, type: 3}
 --- !u!4 &10636520
 Transform:
   m_ObjectHideFlags: 0

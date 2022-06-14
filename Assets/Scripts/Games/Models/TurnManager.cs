@@ -40,7 +40,6 @@ namespace Games.Models
                     continue;
                 }
                 this.turnArray[i] = (turnArray[i], turnArray[i + 1]);
-                Debug.Log(turnArray[i]);
             }
             
         }
