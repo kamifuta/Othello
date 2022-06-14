@@ -31,9 +31,13 @@ namespace Titles
         [SerializeField] private GameObject matchingSettingPanel;
         [SerializeField] private GameObject onlineSettingPanel;
 
+        [SerializeField] private PhotonView photonView;
+        [SerializeField] private Button[] backButtonArray;
+
         private void Start()
         {
             ExchangePanelObservables();
+            BackButtonObservable();
             JoinedRoomObservables();
         }
 
@@ -56,7 +60,7 @@ namespace Titles
                 .Subscribe(_ =>
                 {
                     offlinePlaySettingManager.SetRandomTurn();
-                    gameManager.LoadGameScene();
+                    photonView.RPC(nameof(gameManager.LoadGameScene), RpcTarget.All);
                 })
                 .AddTo(this);
 
@@ -77,9 +81,25 @@ namespace Titles
                 {
                     onlinePlaySettingManager.SetRandomTurn();
 
-                    gameManager.LoadGameScene();
+                    photonView.RPC(nameof(gameManager.LoadGameScene), RpcTarget.All);
                 })
                 .AddTo(this);
+        }
+
+        private void BackButtonObservable()
+        {
+            foreach(var x in backButtonArray)
+            {
+                x.OnClickAsObservable()
+                    .Subscribe(_ =>
+                    {
+                        chooseGameModePanel.SetActive(true);
+                        onlineSettingPanel.SetActive(false);
+                        offlineSettingPanel.SetActive(false);
+                        matchingSettingPanel.SetActive(false);
+                    })
+                    .AddTo(this);
+            }
         }
 
         private void JoinedRoomObservables()

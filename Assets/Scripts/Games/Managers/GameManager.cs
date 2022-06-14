@@ -24,6 +24,7 @@ namespace Games.Managers
             DontDestroyOnLoad(this);
         }
 
+        [PunRPC]
         public async void LoadGameScene()
         {
             if (PhotonNetwork.OfflineMode)

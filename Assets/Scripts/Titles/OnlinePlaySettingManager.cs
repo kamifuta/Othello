@@ -47,7 +47,7 @@ namespace Titles
         override public int playerNum { get; protected set; }
         override public int CPUNum { get; protected set; } = 0;
         override public Dictionary<Players, string> nicknameDic { get; protected set; } = new Dictionary<Players, string>();
-        override public Players[] CPUArray { get; }
+        override public Players[] CPUArray { get; } = new Players[0];
 
         public bool IsRandomTurn { get; private set; } = true;
 
@@ -105,6 +105,8 @@ namespace Titles
         //ルームに入ったあと
         public void StartPlayerSetting()
         {
+            ClearPanels();
+
             //ターン設定をデフォルトにする（入った順）
             turnArray = new Players[playerNum];
             for(int i = 0; i < playerNum; i++)
@@ -117,10 +119,17 @@ namespace Titles
             SetPanelPosition();
             SetUsableDoropdowns(false);
             SetDropdownOptions();
-            ViewNickname();
             SetUsableRandomToggle();
             RandomToggleObservable();
             DropDownValueChangedObservables();
+        }
+
+        private void ClearPanels()
+        {
+            foreach(var x in playerInfoObjectArray)
+            {
+                x.panel.SetActive(false);
+            }
         }
 
         //表示するパネルの枚数を決める
@@ -177,11 +186,11 @@ namespace Titles
         {
             var playerList = PhotonNetwork.CurrentRoom.Players;
 
-            for (int i = 0; i < playerNum; i++)
+            for (int i = 1; i <= playerNum; i++)
             {
-                if (playerList.ContainsKey(i + 1))
+                if (playerList.ContainsKey(i) && !nicknameDic.Any(x => (int)x.Key == i))
                 {
-                    nicknameDic.Add(playerList[i + 1].GetPlayerType(), playerList[i + 1].NickName);
+                    nicknameDic.Add(playerList[i].GetPlayerType(), playerList[i].NickName);
                 }
             }
         }
@@ -193,7 +202,7 @@ namespace Titles
             {
                 if (i+1 <= nicknameDic.Count)
                 {
-                    activeInfoObjectArray[i].nicknameText.text = nicknameDic.FirstOrDefault(x => (int)x.Key == i + 1).Value;
+                    activeInfoObjectArray[i].nicknameText.text = nicknameDic.FirstOrDefault(x => (int)x.Key == i+1).Value;
                 }
                 else
                 {
@@ -289,13 +298,13 @@ namespace Titles
         }
 
         //ルームプロパティの変更時
-        public void OnRoomPropertiesUpdate(ExitGames.Client.Photon.Hashtable propertiesThatChanged)
+        public override void OnRoomPropertiesUpdate(ExitGames.Client.Photon.Hashtable propertiesThatChanged)
         {
             UpdataTurnDropdowns();
         }
 
         //プレイヤーが入ってきたときの処理
-        public void OnPlayerEnteredRoom(Player newPlayer)
+        public override void OnPlayerEnteredRoom(Player newPlayer)
         {
             SetNicknames();
             ViewNickname();
@@ -304,6 +313,12 @@ namespace Titles
 
             turnDropdownDic.Add(newPlayer.GetPlayerType(), infoObject.turnDropDown);
             infoObject.turnDropDown.value = PhotonNetwork.CurrentRoom.PlayerCount - 1;
+        }
+
+        public override void OnPlayerPropertiesUpdate(Player targetPlayer, ExitGames.Client.Photon.Hashtable changedProps)
+        {
+            SetNicknames();
+            ViewNickname();
         }
     }
 }
