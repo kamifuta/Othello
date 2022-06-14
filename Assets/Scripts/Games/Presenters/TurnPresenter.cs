@@ -7,7 +7,7 @@ using Games.Views;
 using Games.Utils;
 using System.Linq;
 using Photon.Pun;
-using Photons;
+using MyPhotons;
 using System;
 
 namespace Games.Presenters

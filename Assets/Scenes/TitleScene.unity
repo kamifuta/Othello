@@ -7234,6 +7234,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   offlineSetting: {fileID: 1282383352}
   onlineSetting: {fileID: 804814567}
+  firstDiscsInfoTable: {fileID: 11400000, guid: 70b795c0de0bd6042aab34238e138071, type: 2}
 --- !u!4 &876642642
 Transform:
   m_ObjectHideFlags: 0

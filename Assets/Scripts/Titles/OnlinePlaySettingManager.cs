@@ -5,7 +5,7 @@ using UniRx;
 using UnityEngine;
 using UnityEngine.UI;
 using System.Linq;
-using Photons;
+using MyPhotons;
 using Games;
 using System;
 using Photon.Realtime;
@@ -28,8 +28,6 @@ namespace Titles
         [SerializeField] private Button twoPlayerButton;
         [SerializeField] private Button threePlayerButton;
         [SerializeField] private Button fourPlayerButton;
-        //private ReactiveProperty<int> playerNumProperty = new ReactiveProperty<int>();
-        //public IReadOnlyReactiveProperty<int> PlayerNumProperty => playerNumProperty;
 
         //プレイヤーの名前関連
         [SerializeField] private InputField nicknameinputField;

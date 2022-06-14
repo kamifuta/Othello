@@ -71,7 +71,6 @@ namespace Titles
         public void Init()
         {
             DontDestroyOnLoad(this.gameObject);
-            //ClearPanels();
 
             InitPlayerInfos();
 
@@ -89,14 +88,6 @@ namespace Titles
                     AdjustDropdoenOption(x);
                 })
                 .AddTo(this);
-        }
-
-        private void ClearPanels()
-        {
-            foreach(var x in playerInfoObjectArray)
-            {
-                x.panel.SetActive(false);
-            }
         }
 
         //PlayerInfoÉNÉâÉXÇÃèâä˙âª

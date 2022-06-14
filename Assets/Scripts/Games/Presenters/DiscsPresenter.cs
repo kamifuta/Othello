@@ -8,7 +8,6 @@ using Games.Utils;
 using System.Linq;
 using Cysharp.Threading.Tasks;
 using Photon.Pun;
-using Photons;
 
 namespace Games.Presenters
 {
@@ -22,12 +21,11 @@ namespace Games.Presenters
         [SerializeField] private PhotonView photonView;
 
         private Board board = Board.Instance;
-        //private TurnManager turnManager = TurnManager.Instance;
 
         private Queue<List<GameObject>> changeDiscsQueue = new Queue<List<GameObject>>();
         private Dictionary<Vector2, GameObject> discsPointDic = new Dictionary<Vector2, GameObject>();
 
-        public void Init(int playerNum)
+        public void Init(int playerNum, FirstDiscsInfoTable table)
         {
             board.CreatedBoardObservable
                 .Subscribe(x => {
@@ -36,15 +34,24 @@ namespace Games.Presenters
                 })
                 .AddTo(this);
 
-            
-            board.Init(playerNum);
+            var boardSide = GetBoardSide(playerNum);
+
+            board.Init(boardSide, table.FirstDiscsInfoDic[boardSide]);
             CreateBoardObservables();
             ClickedPointObservables();
             ViewChangeObservables();
 
-            //turnManager.SetFirstTurn(playerNum);
             clickPointsManager.Init();
         }
+
+        private int GetBoardSide(int playerNum)
+            => playerNum switch
+                {
+                    2 => 8,
+                    3 => 9,
+                    4 => 10,
+                    _ => 0,
+                };
 
         private void CreateBoardObservables()
         {
@@ -121,7 +128,6 @@ namespace Games.Presenters
             discsView.AllDiscsChangeObservable
                 .Subscribe(_ =>
                 {
-                    //turnManager.GoToNextTurn();
                     changeDiscsQueue.Clear();
                 })
                 .AddTo(this);

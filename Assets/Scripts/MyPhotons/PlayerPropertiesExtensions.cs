@@ -4,7 +4,7 @@ using Photon.Realtime;
 using System;
 using UnityEngine;
 
-namespace Photons
+namespace MyPhotons
 {
     public static class PlayerPropertiesExtensions
     {

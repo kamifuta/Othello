@@ -21,7 +21,7 @@ namespace Games.Views
 
         public bool IsRevercing { get; private set; }
 
-        private const float rotateSpeed = 250f;
+        private const float rotateSpeed = 300f;
         private Vector3 rotateVec = new Vector3(rotateSpeed, 0, 0);
 
         //石のオブジェクトとマテリアルを紐づけるDictionary

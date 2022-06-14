@@ -12,10 +12,13 @@ namespace Games.Models
         private static Board instance = new Board();
         public static Board Instance => instance;
 
-        public int side { get; private set; } = 10;
+        private ReverceManager reverceManager = new ReverceManager();
 
         public ColorType[,] discColorsArray { get; private set; }
+        public int side { get; private set; } = 8;
 
+        private ColorType currentColorType;
+        
         //石が置かれたことを通知するSubject
         private Subject<KeyValuePair<Vector2Int, ColorType>> putDiscsSubject = new Subject<KeyValuePair<Vector2Int, ColorType>>();
         public IObservable<KeyValuePair<Vector2Int, ColorType>> PutDiscObservable => putDiscsSubject.AsObservable();
@@ -36,17 +39,13 @@ namespace Games.Models
         private ReactiveProperty<List<Vector2Int>> settablePointsCollection=new ReactiveProperty<List<Vector2Int>>();
         public IReadOnlyReactiveProperty<List<Vector2Int>> SettablePointsCollection => settablePointsCollection;
 
-        //private SettableChecker settableChecker;
-        private ReverceManager reverceManager = new ReverceManager();
-
-        private ColorType currentColorType;
-
-        public void Init(int playerNum)
+        public void Init(int side, List<FirstDiscsInfo> infoList)
         {
-            SetSide(playerNum);
+            this.side = side;
+
             CreateBoard();
             ClearBoard();
-            PutCenterDisc();
+            PutCenterDisc(infoList);
         }
 
         public void SetCurrentColorType(ColorType currentColorType)
@@ -54,32 +53,12 @@ namespace Games.Models
             this.currentColorType = currentColorType;
         }
 
-        private void SetSide(int playerNum)
-        {
-            switch (playerNum)
-            {
-                case 2:
-                    side = 8;
-                    break;
-                case 3:
-                    side = 9;
-                    break;
-                case 4:
-                    side = 10;
-                    break;
-                default:
-                    Debug.LogError("人数がおかしい");
-                    break;
-            }
-        }
-
-        //NOTE: 二回目にやるときにおかしくなりそう
+        //ボードサイズを決定する
         private void CreateBoard()
         {
             discColorsArray = new ColorType[side, side];
 
             createdBoardSubject.OnNext(side);
-            createdBoardSubject.OnCompleted();
         }
 
         //ボードの上を片づける
@@ -95,53 +74,11 @@ namespace Games.Models
         }
 
         //初期配置のディスクを設置する
-        private void PutCenterDisc()
+        private void PutCenterDisc(List<FirstDiscsInfo> infoList)
         {
-            //if (!PhotonNetwork.IsMasterClient) return;
-
-            switch (side)
+            foreach(var x in infoList)
             {
-                case 8:
-                    PutDiscs(new Vector2Int(3, 3),ColorType.Black, isCenter: true);
-                    PutDiscs(new Vector2Int(4, 4),ColorType.Black, isCenter: true);
-
-                    PutDiscs(new Vector2Int(3, 4),ColorType.White, isCenter: true);
-                    PutDiscs(new Vector2Int(4, 3),ColorType.White, isCenter: true);
-                    break;
-                case 9:
-                    PutDiscs(new Vector2Int(3, 3), ColorType.Black, isCenter: true);
-                    PutDiscs(new Vector2Int(4, 4), ColorType.Black, isCenter: true);
-                    PutDiscs(new Vector2Int(5, 5), ColorType.Black, isCenter: true);
-
-                    PutDiscs(new Vector2Int(3, 4), ColorType.White, isCenter: true);
-                    PutDiscs(new Vector2Int(4, 5), ColorType.White, isCenter: true);
-                    PutDiscs(new Vector2Int(5, 3), ColorType.White, isCenter: true);
-
-                    PutDiscs(new Vector2Int(3, 5), ColorType.Red, isCenter: true);
-                    PutDiscs(new Vector2Int(4, 3), ColorType.Red, isCenter: true);
-                    PutDiscs(new Vector2Int(5, 4), ColorType.Red, isCenter: true);
-                    break;
-                case 10:
-                    PutDiscs(new Vector2Int(3, 3), ColorType.Black, isCenter: true);
-                    PutDiscs(new Vector2Int(4, 4), ColorType.Black, isCenter: true);
-                    PutDiscs(new Vector2Int(5, 5), ColorType.Black, isCenter: true);
-                    PutDiscs(new Vector2Int(6, 6), ColorType.Black, isCenter: true);
-
-                    PutDiscs(new Vector2Int(3, 4), ColorType.White, isCenter: true);
-                    PutDiscs(new Vector2Int(4, 5), ColorType.White, isCenter: true);
-                    PutDiscs(new Vector2Int(5, 6), ColorType.White, isCenter: true);
-                    PutDiscs(new Vector2Int(6, 3), ColorType.White, isCenter: true);
-
-                    PutDiscs(new Vector2Int(3, 5), ColorType.Red, isCenter: true);
-                    PutDiscs(new Vector2Int(4, 6), ColorType.Red, isCenter: true);
-                    PutDiscs(new Vector2Int(5, 3), ColorType.Red, isCenter: true);
-                    PutDiscs(new Vector2Int(6, 4), ColorType.Red, isCenter: true);
-
-                    PutDiscs(new Vector2Int(3, 6), ColorType.Blue, isCenter: true);
-                    PutDiscs(new Vector2Int(4, 3), ColorType.Blue, isCenter: true);
-                    PutDiscs(new Vector2Int(5, 4), ColorType.Blue, isCenter: true);
-                    PutDiscs(new Vector2Int(6, 5), ColorType.Blue, isCenter: true);
-                    break;
+                PutDiscs(x.PutPoint, x.ColorType, isCenter: true);
             }
         }
 

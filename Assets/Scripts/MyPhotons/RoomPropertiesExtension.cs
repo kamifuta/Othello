@@ -6,7 +6,7 @@ using Games;
 using System.Linq;
 using System;
 
-namespace Photons
+namespace MyPhotons
 {
     public static class RoomPropertiesExtension
     {

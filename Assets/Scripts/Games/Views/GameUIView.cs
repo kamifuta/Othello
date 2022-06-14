@@ -26,10 +26,16 @@ namespace Games.Views
         [SerializeField] private Text[] discCountTextArray;
         [SerializeField] private Text[] nicknameTextArray;
 
+        [SerializeField] private Button backTitleButton;
+        private Action backTitleButtonActin;
+
         private CancellationToken token;
 
-        public void Init(int allPlayerNum, Dictionary<Players, string> nicknameDic)
+        public void Init(int allPlayerNum, Dictionary<Players, string> nicknameDic, Action backTitleButtonAction)
         {
+            this.backTitleButtonActin = backTitleButtonAction;
+            BackTitleButtonObservable();
+
             token = this.GetCancellationTokenOnDestroy();
             VisiblePlayerInfoPanels(allPlayerNum);
             SetNickname(nicknameDic.Values.ToList());
@@ -97,6 +103,16 @@ namespace Games.Views
 
             winnerText.text = winnerName;
             resultPanel.SetActive(true);
+        }
+
+        private void BackTitleButtonObservable()
+        {
+            backTitleButton.OnClickAsObservable()
+                .Subscribe(_ =>
+                {
+                    backTitleButtonActin();
+                })
+                .AddTo(this);
         }
     }
 }

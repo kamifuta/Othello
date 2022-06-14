@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace Photons
+namespace MyPhotons
 {
     public static class MyCustomType
     {
