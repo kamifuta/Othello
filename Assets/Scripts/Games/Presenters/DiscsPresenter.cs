@@ -8,17 +8,13 @@ using Games.Utils;
 using System.Linq;
 using Cysharp.Threading.Tasks;
 using Photon.Pun;
+using Games.Models.ScriptableObjects;
 
 namespace Games.Presenters
 {
     public class DiscsPresenter : MonoBehaviour
     {
-        [SerializeField] private BoardView boardView;
-        [SerializeField] private SettablePointsView settablePointsView;
         [SerializeField] private DiscsView discsView;
-        [SerializeField] private ClickPointsManager clickPointsManager;
-
-        [SerializeField] private PhotonView photonView;
 
         private Board board = Board.Instance;
 
@@ -28,8 +24,7 @@ namespace Games.Presenters
         public void Init(int playerNum, FirstDiscsInfoTable table)
         {
             board.CreatedBoardObservable
-                .Subscribe(x => {
-                    boardView.InstanceBoard(x);
+                .Subscribe(_ => {
                     DiscsChangeObservables();
                 })
                 .AddTo(this);
@@ -37,13 +32,10 @@ namespace Games.Presenters
             var boardSide = GetBoardSide(playerNum);
 
             board.Init(boardSide, table.FirstDiscsInfoDic[boardSide]);
-            CreateBoardObservables();
-            ClickedPointObservables();
-            ViewChangeObservables();
-
-            clickPointsManager.Init();
+            AllDiscsChangeObservables();
         }
 
+        //ボードの一片のマス数を決める
         private int GetBoardSide(int playerNum)
             => playerNum switch
                 {
@@ -53,28 +45,13 @@ namespace Games.Presenters
                     _ => 0,
                 };
 
-        private void CreateBoardObservables()
-        {
-            //設置可能な位置が変わった時にその位置にオブジェクトを配置させる
-            board.SettablePointsCollection
-                .Skip(1)
-                .Subscribe(x =>
-                {
-                    settablePointsView.InvidibleSettablePointObj();
-                    settablePointsView
-                        .ViewSettablePoints(x.Select(v => Converter.ConvertToWorldPoint(v)).ToList());
-                })
-                .AddTo(this);
-        }
-
         private void DiscsChangeObservables()
         {
             var token = this.GetCancellationTokenOnDestroy();
             
-
             //石が置かれたときその位置に石を生成させる
             board.PutDiscObservable
-                .Where(v=> !discsPointDic.Any(x => x.Key == v.Key))
+                .Where(v=> !discsPointDic.ContainsKey(v.Key))
                 .Subscribe(v =>
                 {
                     var point = v.Key;
@@ -95,6 +72,7 @@ namespace Games.Presenters
                 })
                 .AddTo(this);
 
+            //Model上ですべての石の色が変わったらViewを変える
             board.AllDiscsChangeObservable
                 .Subscribe(x =>
                 {
@@ -104,25 +82,7 @@ namespace Games.Presenters
                 .AddTo(this);
         }
 
-        private void ClickedPointObservables()
-        {
-            clickPointsManager.ClickedPointObservable
-                .Subscribe(x =>
-                {
-                    settablePointsView.InvidibleSettablePointObj();
-
-                    photonView.RPC(nameof(SendPutDiscs), RpcTarget.All, Converter.ConvertToModelPoint(x));
-                })
-                .AddTo(this);
-        }
-
-        [PunRPC]
-        private void SendPutDiscs(Vector2Int putPoint)
-        {
-            board.PutDiscs(putPoint);
-        }
-
-        private void ViewChangeObservables()
+        private void AllDiscsChangeObservables()
         {
             //石をひっくり返し終わった時の処理
             discsView.AllDiscsChangeObservable

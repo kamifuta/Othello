@@ -1,5 +1,4 @@
 using Games;
-using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -8,11 +7,14 @@ namespace Titles
 {
     public interface IPlaySetting
     {
-        public Players[] turnArray { get; }
-        public int allPlayerNum { get; }
-        public int playerNum { get; }
-        public int CPUNum { get; }
-        public Dictionary<Players, string> nicknameDic { get; }
+        Players[] turnArray { get;}
+        int allPlayerNum { get; }
+        int playerNum { get;}
+        int CPUNum { get; }
+        Dictionary<Players, string> nicknameDic { get;}
+        Players[] CPUArray { get; }
+
+        void Destroy();
     }
 }
 

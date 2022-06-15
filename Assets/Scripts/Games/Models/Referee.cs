@@ -4,6 +4,7 @@ using UnityEngine;
 using System.Linq;
 using UniRx;
 using System;
+using Games.Utils;
 
 namespace Games.Models
 {
@@ -28,7 +29,7 @@ namespace Games.Models
         {
             var countDic = CountDiscs();
             int max = countDic.Values.Max();
-            Players winner=EnumConverter.ConvertToPlayers(countDic.FirstOrDefault(x => x.Value == max).Key);
+            Players winner=Converter.ConvertToPlayers(countDic.FirstOrDefault(x => x.Value == max).Key);
 
             resultSubject.OnNext(winner);
         }

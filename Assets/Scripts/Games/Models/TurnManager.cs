@@ -1,3 +1,4 @@
+using Games.Utils;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -51,7 +52,7 @@ namespace Games.Models
             currentPlayer = turnArray[0].Item1;
             nextPlayer = turnArray[0].Item2;
 
-            board.SetCurrentColorType(EnumConverter.ConvertToColorType(currentPlayer));
+            board.SetCurrentColorType(Converter.ConvertToColorType(currentPlayer));
             board.SetSettablePoints();
             changeTurnSubject.OnNext(currentPlayer);
         }
@@ -63,7 +64,7 @@ namespace Games.Models
             currentPlayer = nextPlayer;
             nextPlayer = turnArray.FirstOrDefault(x => x.Item1 == nextPlayer).Item2;
 
-            board.SetCurrentColorType(EnumConverter.ConvertToColorType(currentPlayer));
+            board.SetCurrentColorType(Converter.ConvertToColorType(currentPlayer));
             bool settable = board.SetSettablePoints();
 
             //石を置くことができないならパスするかゲームが終了するかを調べる

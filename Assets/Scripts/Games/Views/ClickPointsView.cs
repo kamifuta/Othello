@@ -7,7 +7,7 @@ using System;
 
 namespace Games.Views
 {
-    public class ClickPointsManager : MonoBehaviour
+    public class ClickPointsView : MonoBehaviour
     {
         [SerializeField] private Camera camera;
 

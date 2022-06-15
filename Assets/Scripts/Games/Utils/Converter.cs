@@ -1,4 +1,5 @@
 using Games.Models;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -14,23 +15,20 @@ namespace Games.Utils
         public static Vector2Int ConvertToModelPoint(Vector3 worldPoint)
             => new Vector2Int((int)worldPoint.x, (int)worldPoint.z);
 
+        public static ColorType ConvertToColorType(Players players)
+            => (ColorType)Enum.ToObject(typeof(ColorType), (int)players);
+
+        public static Players ConvertToPlayers(ColorType colorType)
+            => (Players)Enum.ToObject(typeof(Players), (int)colorType);
+
         public static Color ConvertToColor(ColorType colorType)
-        {
-            switch (colorType)
+            => colorType switch
             {
-                case ColorType.Black:
-                    return Color.black;
-                case ColorType.White:
-                    return Color.white;
-                case ColorType.Red:
-                    return Color.red;
-                case ColorType.Blue:
-                    return Color.blue;
-                default:
-                    Debug.LogError("ColorType‚ª‚¨‚©‚µ‚¢");
-                    return Color.green;
-            }
-        }
+                ColorType.Black => Color.black,
+                ColorType.White => Color.white,
+                ColorType.Red => Color.red,
+                ColorType.Blue => Color.blue,
+            };
     }
 }
 

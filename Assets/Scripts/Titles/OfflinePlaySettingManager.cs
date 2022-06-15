@@ -11,7 +11,7 @@ using UniRx.Triggers;
 
 namespace Titles
 {
-    public class OfflinePlaySettingManager : BasePlaySetting
+    public class OfflinePlaySettingManager : MonoBehaviour, IPlaySetting
     {
         private enum PlayerType
         {
@@ -50,18 +50,18 @@ namespace Titles
         private PlayerInfo[] playerInfoArray = new PlayerInfo[MaxPlayerNum];
 
         //インターフェースの実装
-        override public Players[] turnArray { get; protected set; }
-        override public int allPlayerNum => playerNum + CPUNum;
-        override public int playerNum { get; protected set; }
-        override public int CPUNum { get; protected set; }
-        override public Dictionary<Players, string> nicknameDic { get; protected set; } = new Dictionary<Players, string>()
+        public Players[] turnArray { get; private set; }
+        public int allPlayerNum => playerNum + CPUNum;
+        public int playerNum { get; private set; }
+        public int CPUNum { get; private set; }
+        public Dictionary<Players, string> nicknameDic { get; private set; } = new Dictionary<Players, string>()
         {
             {Players.Player1,"Player1" },
             {Players.Player2,"Player2" },
             {Players.Player3,"Player3" },
             {Players.Player4,"Player4" },
         };
-        override public Players[] CPUArray => playerInfoArray.Where(x => x.playerType == PlayerType.CPU).Select(y => y.players).ToArray();
+        public Players[] CPUArray => playerInfoArray.Where(x => x.playerType == PlayerType.CPU).Select(y => y.players).ToArray();
 
         [SerializeField] private Toggle randamToggle;
         private System.Random random = new System.Random();
@@ -179,7 +179,7 @@ namespace Titles
                     {
                         //ドロップダウンの値の入れ替え
                         var notThisDropdownArray = playerInfoObjectArray.Where(x => x != playerInfoObjectArray[index]).Select(y => y.dropdown).Where(z=>z.gameObject.activeSelf); //自身を除くドロップダウンの配列
-                        var changeDropdown = notThisDropdownArray.FirstOrDefault(x => x.value == v.newValue);
+                        var changeDropdown = notThisDropdownArray.FirstOrDefault(x => x.value == v.newValue); //値を変えるべきドロップダウン
                         if (!changeDropdown) return;
                         changeDropdown.value = v.oldvalue;
 
@@ -305,6 +305,11 @@ namespace Titles
                     })
                     .AddTo(this);
             }
+        }
+
+        public void Destroy()
+        {
+            Destroy(this.gameObject);
         }
     }
 } 

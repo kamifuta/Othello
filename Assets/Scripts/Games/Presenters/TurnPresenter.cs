@@ -19,8 +19,12 @@ namespace Games.Presenters
 
         private TurnManager turnManager = TurnManager.Instance;
 
-        public void Init(Players[] turnArray)
+        private Dictionary<Players, string> nicknameDic;
+
+        public void Init(Players[] turnArray, Dictionary<Players,string> nicknameDic)
         {
+            this.nicknameDic = nicknameDic;
+
             TurnCgangeObservables();
             PassObservables();
             ResultObservable();
@@ -28,6 +32,7 @@ namespace Games.Presenters
             turnManager.SetTurnList(turnArray);
             turnManager.SetFirstTurn();
 
+            //すべての石をひっくり返し終わったら次のターンに進む
             discsView.AllDiscsChangeObservable
                 .Subscribe(_ =>
                 {
@@ -36,19 +41,21 @@ namespace Games.Presenters
                 .AddTo(this);
         }
 
+        //ターンが切り替わったときの処理
         private void TurnCgangeObservables()
         {
             turnManager.ChangeTurnObservable
                 .Subscribe(x =>
                 {
                     gameUIView.SetCurrentTurnText(GetPlayerName(x));
-                    gameUIView.SetCurrentPlayerColor(Converter.ConvertToColor(EnumConverter.ConvertToColorType(turnManager.currentPlayer)));
+                    gameUIView.SetCurrentPlayerColor(Converter.ConvertToColor(Converter.ConvertToColorType(turnManager.currentPlayer)));
 
                     gameUIView.UpdateDiscsCount(Referee.CountDiscs().Values.ToList());
                 })
                 .AddTo(this);
         }
 
+        //パスしたときの処理
         private void PassObservables()
         {
             turnManager.CurrentTurnPassObservable
@@ -59,6 +66,7 @@ namespace Games.Presenters
                 .AddTo(this);
         }
 
+        //勝敗が決まったときの処理
         private void ResultObservable()
         {
             Referee.ResultObservable
@@ -70,21 +78,7 @@ namespace Games.Presenters
         }
 
         private string GetPlayerName(Players player)
-        {
-            switch (player)
-            {
-                case Players.Player1:
-                    return "Player1";
-                case Players.Player2:
-                    return "Player2";
-                case Players.Player3:
-                    return "Player3";
-                case Players.Player4:
-                    return "Player4";
-                default:
-                    return "None";
-            }
-        }
+            => nicknameDic.FirstOrDefault(x => x.Key == player).Value;
     }
 }
 

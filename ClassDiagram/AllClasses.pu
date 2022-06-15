@@ -1,0 +1,109 @@
+﻿@startuml AllClasses
+
+namespace Games{
+    namespace Models{
+        namespace Scriptableobjects{
+            class FirstDiscsInfoTable
+        }
+
+        enum ColorType
+
+        class Board
+        class Referee
+        class ReverceManager
+        class SettableChecker
+        class TurnManager
+
+        Board-->ReverceManager
+        Board-->SettableChecker
+
+        Referee-->Board
+        Referee-->Converter
+
+        TurnManager-->Referee
+    }
+
+    namespace Views{
+        class BoardView
+        class ClickPointsView
+        class DiscsView
+        class GameUIView
+        class SettablePointsView
+
+        GameUIView->DiscsView
+    }
+
+    namespace Presenters{
+        class DiscsPresenter
+        class TurnPresenter
+        class BoardPresenter
+        class SettablePointsPresenter
+    }
+
+    namespace Managers{
+        class CameraManager
+        class GameManager
+    }
+}
+
+namespace AI{
+    class AIManager
+    class RandomPutAI
+    interface IAITurnChecker
+
+    IAITurnChecker<|..AIManager
+}
+
+namespace MyPhotons{
+    class MyCustomType
+    class NetworkTurnManager
+}
+
+namespace Titles{
+    interface IPlaySetting
+    class MatchingMnaager
+    class OfflinePlaySettingManager
+    class OnlineSettingManager
+    class TitleSceneManager
+
+    IPlaySetting<|..OfflinePlaySettingManager
+    IPlaySetting<|..OnlineSettingManager
+}
+
+Games.Managers.GameManager-->Games.Models.Scriptableobjects.FirstDiscsInfoTable
+Games.Managers.GameManager-->Titles.BasePlaySetting
+Games.Managers.GameManager-->MyPhotons.MyCustomType
+Games.Managers.GameManager->Games.Managers.CameraManager
+Games.Managers.GameManager--->Games.Presenters.DiscsPresenter
+Games.Managers.GameManager--->Games.Presenters.TurnPresenter
+Games.Managers.GameManager--->Games.Presenters.BoardPresenter
+Games.Managers.GameManager--->Games.Presenters.SettablePointsPresenter
+Games.Managers.GameManager-->Games.Views.GameUIView
+Games.Managers.GameManager-->AI.AIManager
+
+Titles.TitleSceneManager-->Games.Managers.GameManager
+Titles.TitleSceneManager--->Titles.OfflinePlaySettingManager
+Titles.TitleSceneManager--->Titles.OnlineSettingManager
+Titles.TitleSceneManager--->Titles.MatchingMnaager
+
+Games.Presenters.DiscsPresenter--->Games.Models.Board
+Games.Presenters.DiscsPresenter--->Games.Views.DiscsView
+Games.Presenters.BoardPresenter--->Games.Views.BoardView
+Games.Presenters.BoardPresenter--->Games.Models.Board
+Games.Presenters.SettablePointsPresenter--->Games.Views.ClickPointsView
+Games.Presenters.SettablePointsPresenter--->Games.Views.SettablePointsView
+Games.Presenters.SettablePointsPresenter--->Games.Models.Board
+Games.Presenters.SettablePointsPresenter--->AI.IAITurnChecker
+Games.Presenters.SettablePointsPresenter--->MyPhotons.NetworkTurnManager
+Games.Presenters.TurnPresenter-->Games.Models.TurnManager
+Games.Presenters.TurnPresenter-->Games.Views.DiscsView
+Games.Presenters.TurnPresenter-->Games.Views.GameUIView
+
+AI.RandomPutAI-->Games.Models.Board
+AI.RandomPutAI-->Games.Models.TurnManager
+AI.AIManager-->Games.Models.TurnManager
+AI.AIManager-->AI.RandomPutAI
+
+MyPhotons.NetworkTurnManager-->Games.Models.TurnManager
+
+@enduml

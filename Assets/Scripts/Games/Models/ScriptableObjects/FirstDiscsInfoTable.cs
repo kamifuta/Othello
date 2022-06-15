@@ -4,7 +4,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace Games.Models
+namespace Games.Models.ScriptableObjects
 {
     [Serializable]
     public class FirstDiscsInfoList

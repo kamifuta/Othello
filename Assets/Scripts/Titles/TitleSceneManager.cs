@@ -60,7 +60,7 @@ namespace Titles
                 .Subscribe(_ =>
                 {
                     offlinePlaySettingManager.SetRandomTurn();
-                    photonView.RPC(nameof(gameManager.LoadGameScene), RpcTarget.All);
+                    photonView.RPC(nameof(gameManager.LoadGameScene), RpcTarget.All, offlinePlaySettingManager);
                 })
                 .AddTo(this);
 
@@ -81,7 +81,7 @@ namespace Titles
                 {
                     onlinePlaySettingManager.SetRandomTurn();
 
-                    photonView.RPC(nameof(gameManager.LoadGameScene), RpcTarget.All);
+                    photonView.RPC(nameof(gameManager.LoadGameScene), RpcTarget.All, onlinePlaySettingManager);
                 })
                 .AddTo(this);
         }

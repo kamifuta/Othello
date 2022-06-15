@@ -7,13 +7,6 @@ namespace Games.Models
 {
     public static class SettableChecker
     {
-        //private int side;
-
-        //public SettableChecker(int side)
-        //{
-        //    this.side = side;
-        //}
-
         public static List<Vector2Int> GetSettablePoints(ColorType[,] discArray, ColorType colorType)
         {
             int side = (int)Mathf.Sqrt(discArray.Length);

@@ -13,17 +13,13 @@ namespace Games.Views
         [SerializeField] private Transform triggerParent;
         [SerializeField] private GameObject pointPrefab;
         [SerializeField] private GameObject clickTriggerPrefab;
-        [SerializeField] private AIManager _AIManager;
-
+        
         private List<GameObject> settablePointsObjList = new List<GameObject>();
         private List<GameObject> triggerObjList = new List<GameObject>();
 
         //シーン上に置ける場所を表示する関数
         public void ViewSettablePoints(List<Vector3> pointsList)
         {
-            if (_AIManager.CheckAITurn()) return;
-            if (!PhotonNetwork.OfflineMode && !NetworkTurnManager.IsMyTurn()) return;
-
             int pointLength = pointsList.Count;
 
             AssortPointObj(pointLength);

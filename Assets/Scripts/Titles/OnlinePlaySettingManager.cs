@@ -14,7 +14,7 @@ using Random = System.Random;
 
 namespace Titles
 {
-    public class OnlinePlaySettingManager : BasePlaySetting
+    public class OnlinePlaySettingManager : MonoBehaviourPunCallbacks, IPlaySetting
     {
         [Serializable]
         private class PlayerInfoObject
@@ -40,12 +40,12 @@ namespace Titles
         [SerializeField] private PlayerInfoObject[] playerInfoObjectArray;
 
         //インターフェースの実装
-        override public Players[] turnArray { get; protected set; }
-        override public int allPlayerNum => playerNum;
-        override public int playerNum { get; protected set; }
-        override public int CPUNum { get; protected set; } = 0;
-        override public Dictionary<Players, string> nicknameDic { get; protected set; } = new Dictionary<Players, string>();
-        override public Players[] CPUArray { get; } = new Players[0];
+        public Players[] turnArray { get; private set; }
+        public int allPlayerNum => playerNum;
+        public int playerNum { get; private set; }
+        public int CPUNum { get; private set; } = 0;
+        public Dictionary<Players, string> nicknameDic { get; private set; } = new Dictionary<Players, string>();
+        public Players[] CPUArray { get; } = new Players[0];
 
         public bool IsRandomTurn { get; private set; } = true;
 
@@ -317,6 +317,11 @@ namespace Titles
         {
             SetNicknames();
             ViewNickname();
+        }
+
+        public void Destroy()
+        {
+            Destroy(this.gameObject);
         }
     }
 }

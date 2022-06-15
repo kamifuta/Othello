@@ -4,6 +4,7 @@ using UnityEngine;
 using UniRx;
 using System;
 using System.Linq;
+using Games.Models.ScriptableObjects;
 
 namespace Games.Models
 {
@@ -32,8 +33,8 @@ namespace Games.Models
         public IObservable<ColorType> AllDiscsChangeObservable => allDiscsChangeSubject.AsObservable();
 
         //ボードの作成が完了したことを通知するSubject
-        private Subject<int> createdBoardSubject = new Subject<int>();
-        public IObservable<int> CreatedBoardObservable => createdBoardSubject.AsObservable();
+        private Subject<Unit> createdBoardSubject = new Subject<Unit>();
+        public IObservable<Unit> CreatedBoardObservable => createdBoardSubject.AsObservable();
 
         //ディスクを設置可能な位置を保持するReactiveCollection
         private ReactiveProperty<List<Vector2Int>> settablePointsCollection=new ReactiveProperty<List<Vector2Int>>();
@@ -58,7 +59,8 @@ namespace Games.Models
         {
             discColorsArray = new ColorType[side, side];
 
-            createdBoardSubject.OnNext(side);
+            //createdBoardSubject.OnNext(side);
+            createdBoardSubject.OnNext(Unit.Default);
         }
 
         //ボードの上を片づける
@@ -122,7 +124,6 @@ namespace Games.Models
 
                 //一度に色を変える石の位置のリストを送る
                 discsChangeSubject.OnNext(pointsList);
-
                 k++;
             }
 
@@ -134,7 +135,7 @@ namespace Games.Models
             discColorsArray[changePoint.x, changePoint.y] = colorType;
         }
 
-        public bool SetSettablePoints(bool isAITurn=false)
+        public bool SetSettablePoints()
         {
             settablePointsCollection.Value = SettableChecker.GetSettablePoints(discColorsArray, currentColorType);
             return settablePointsCollection.Value.Count != 0;

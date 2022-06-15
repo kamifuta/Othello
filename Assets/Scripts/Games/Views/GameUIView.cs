@@ -31,18 +31,18 @@ namespace Games.Views
 
         private CancellationToken token;
 
-        public void Init(int allPlayerNum, Dictionary<Players, string> nicknameDic, Action backTitleButtonAction)
+        public void Init(int allPlayerNum, List<string> nicknameList, Action backTitleButtonAction)
         {
             this.backTitleButtonActin = backTitleButtonAction;
             BackTitleButtonObservable();
 
             token = this.GetCancellationTokenOnDestroy();
             VisiblePlayerInfoPanels(allPlayerNum);
-            SetNickname(nicknameDic.Values.ToList());
+            ViewNickname(nicknameList);
         }
 
         //プレイヤー情報を必要な数だけ表示
-        public void VisiblePlayerInfoPanels(int allPlayerNum)
+        private void VisiblePlayerInfoPanels(int allPlayerNum)
         {
             for(int i = 0; i < allPlayerNum; i++)
             {
@@ -50,7 +50,8 @@ namespace Games.Views
             }
         }
 
-        public void SetNickname(IReadOnlyList<string> nicknames)
+        //それぞれのニックネームを表示
+        private void ViewNickname(IReadOnlyList<string> nicknames)
         {
             var count = nicknames.Count;
             for(int i = 0; i < count; i++)
@@ -59,16 +60,19 @@ namespace Games.Views
             }
         }
 
+        //現在誰のターンか表示する
         public void SetCurrentTurnText(string text)
         {
             turnText.text = text;
         }
 
+        //現在のプレイヤーの色を表示する
         public void SetCurrentPlayerColor(Color color)
         {
             colorImage.color = color;
         }
 
+        //現在の石の数を表示する
         public void UpdateDiscsCount(IReadOnlyList<int> countList)
         {
             var length = countList.Count;
@@ -78,6 +82,7 @@ namespace Games.Views
             }
         }
 
+        //パスしたことを知らせるテキスト
         public async void ShowPassText(Action callback)
         {
             passTextObj.gameObject.SetActive(true);
@@ -87,6 +92,7 @@ namespace Games.Views
             callback();
         }
 
+        //クリックが時間経過でパステキストが消える
         private async UniTask InvisiblePassTextAsync(CancellationToken token)
         {
             await UniTask.Delay(TimeSpan.FromSeconds(1f), cancellationToken:token);
@@ -97,6 +103,7 @@ namespace Games.Views
             passTextObj.SetActive(false);
         }
 
+        //結果（勝者）の表示
         public async void ShowResult(string winnerName)
         {
             await UniTask.WaitUntil(() => !discsView.IsRevercing, cancellationToken:token);
@@ -105,6 +112,7 @@ namespace Games.Views
             resultPanel.SetActive(true);
         }
 
+        //最初に戻るボタンを押したときの処理
         private void BackTitleButtonObservable()
         {
             backTitleButton.OnClickAsObservable()

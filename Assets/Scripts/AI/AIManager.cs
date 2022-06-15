@@ -10,7 +10,7 @@ using System;
 
 namespace AI
 {
-    public class AIManager : MonoBehaviour
+    public class AIManager : MonoBehaviour, IAITurnChecker
     {
         private TurnManager turnManager = TurnManager.Instance;
 
@@ -34,9 +34,7 @@ namespace AI
         }
 
         public bool CheckAITurn()
-        {
-            return _AIList.Any(x => x == turnManager.currentPlayer);
-        }
+            => _AIList.Any(x => x == turnManager.currentPlayer);
     }
 }
 
