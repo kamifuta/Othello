@@ -14,5 +14,5 @@ https://assetstore.unity.com/packages/tools/network/pun-2-free-119922
 Goole font
 https://fonts.google.com/noto/specimen/Noto+Sans+JP
 
-#Unityroomで遊べます
+# Unityroomで遊べます
 https://unityroom.com/games/kamifuta_8
