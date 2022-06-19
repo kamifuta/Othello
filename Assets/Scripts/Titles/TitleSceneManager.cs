@@ -79,8 +79,6 @@ namespace Titles
             startOnlineButton.OnClickAsObservable()
                 .Subscribe(_ =>
                 {
-                    //onlinePlaySettingManager.SetTurn();
-
                     photonView.RPC(nameof(gameManager.LoadGameScene), RpcTarget.All);
                 })
                 .AddTo(this);

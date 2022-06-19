@@ -283,7 +283,6 @@ namespace Titles
         //èáî‘ÇÃê›íË
         private void SetTurn()
         {
-            Debug.Log("qqq");
             if (randomTurnToggle.isOn)
             {
                 SetRandomTurn();
@@ -321,10 +320,7 @@ namespace Titles
 
         public override void OnPlayerLeftRoom(Player otherPlayer)
         {
-            //var infoObject = activeInfoObjectArray[PhotonNetwork.CurrentRoom.PlayerCount];
-
             turnDropdownDic.Remove(otherPlayer.GetPlayerType());
-            //infoObject.turnDropDown.value = PhotonNetwork.CurrentRoom.PlayerCount - 1;
         }
 
         public override void OnPlayerPropertiesUpdate(Player targetPlayer, ExitGames.Client.Photon.Hashtable changedProps)
