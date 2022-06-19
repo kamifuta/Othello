@@ -28,6 +28,7 @@ namespace Games.Utils
                 ColorType.White => Color.white,
                 ColorType.Red => Color.red,
                 ColorType.Blue => Color.blue,
+                _=>Color.green
             };
     }
 }

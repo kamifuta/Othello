@@ -10,7 +10,5 @@ namespace Games.Models
         White=2,
         Red=3,
         Blue=4,
-        SuperBlack=11,
-        SuperWhite=12,
     }
 }

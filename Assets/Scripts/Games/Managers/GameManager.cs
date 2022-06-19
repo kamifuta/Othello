@@ -28,16 +28,19 @@ namespace Games.Managers
         }
 
         [PunRPC]
-        public async void LoadGameScene(IPlaySetting playSetting)
+        public async void LoadGameScene()
         {
+            IPlaySetting playSetting;
             if (PhotonNetwork.OfflineMode)
             {
                 await SceneManager.LoadSceneAsync("GameScene");
+                playSetting = FindObjectOfType<OfflinePlaySettingManager>();
             }
             else
             {
                 PhotonNetwork.LoadLevel("GameScene");
                 await UniTask.WaitUntil(() => SceneManager.GetActiveScene().name == "GameScene");
+                playSetting = FindObjectOfType<OnlinePlaySettingManager>();
             }
 
             StartGame(playSetting);

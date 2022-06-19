@@ -145,16 +145,16 @@ namespace Titles
         {
             var startPositionX = playerNum switch
             {
-                2 => -100,
-                3 => -200,
-                4 => -300,
+                2 => -150,
+                3 => -300,
+                4 => -450,
                 _=>0
             };
 
             foreach(var x in activeInfoObjectArray)
             {
                 x.panel.transform.localPosition = new Vector3(startPositionX, 0, 0);
-                startPositionX += 200;
+                startPositionX += 300;
             }
         }
 
@@ -238,6 +238,7 @@ namespace Titles
                 {
                     IsRandomTurn = x;
                     SetUsableDoropdowns(!x);
+                    SetTurn();
                 })
                 .AddTo(this);
         }
@@ -282,15 +283,20 @@ namespace Titles
         //‡”Ô‚ÌÝ’è
         private void SetTurn()
         {
+            Debug.Log("qqq");
+            if (randomTurnToggle.isOn)
+            {
+                SetRandomTurn();
+                return;
+            }
+
             turnArray = turnDropdownDic.OrderBy(x => x.Value.value).ToDictionary(y => y.Key, z => z.Value).Keys.ToArray();
             PhotonNetwork.CurrentRoom.SetTurnArray(turnArray.Select(x=>(int)x).ToArray());
         }
 
         //‡”Ô‚ðƒ‰ƒ“ƒ_ƒ€‚É‚·‚é
-        public void SetRandomTurn()
+        private void SetRandomTurn()
         {
-            if (!randomTurnToggle.isOn) return;
-
             turnArray = turnArray.OrderBy(x => random.Next()).ToArray();
             PhotonNetwork.CurrentRoom.SetTurnArray(turnArray.Select(x => (int)x).ToArray());
         }
@@ -311,6 +317,14 @@ namespace Titles
 
             turnDropdownDic.Add(newPlayer.GetPlayerType(), infoObject.turnDropDown);
             infoObject.turnDropDown.value = PhotonNetwork.CurrentRoom.PlayerCount - 1;
+        }
+
+        public override void OnPlayerLeftRoom(Player otherPlayer)
+        {
+            //var infoObject = activeInfoObjectArray[PhotonNetwork.CurrentRoom.PlayerCount];
+
+            turnDropdownDic.Remove(otherPlayer.GetPlayerType());
+            //infoObject.turnDropDown.value = PhotonNetwork.CurrentRoom.PlayerCount - 1;
         }
 
         public override void OnPlayerPropertiesUpdate(Player targetPlayer, ExitGames.Client.Photon.Hashtable changedProps)

@@ -6,9 +6,6 @@ using UniRx;
 using Games.Views;
 using Games.Utils;
 using System.Linq;
-using Photon.Pun;
-using MyPhotons;
-using System;
 
 namespace Games.Presenters
 {
